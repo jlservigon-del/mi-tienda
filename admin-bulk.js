@@ -38,7 +38,15 @@ function parseCSV(input){
  });
 }
 function yn(v,field,line){const val=String(v||'').trim().toUpperCase();if(!['SI','NO'].includes(val))throw Error('Fila '+line+': '+field+' debe ser SI o NO.');return val==='SI';}
-function price(v,line){const num=Number(String(v||'').replace(/\s/g,'').replace(',','.'));if(!Number.isFinite(num)||num<0||num>10000000)throw Error('Fila '+line+': precio inválido.');return Math.round(num*100)/100;}
+function price(v,line){
+ let raw=String(v??'').trim().replace(/^S\s*\/\s*/i,'').replace(/\s/g,'');
+ if(raw.includes(',')&&raw.includes('.')){
+   raw=raw.lastIndexOf(',')>raw.lastIndexOf('.')?raw.replace(/\./g,'').replace(',','.'):raw.replace(/,/g,'');
+ }else if(raw.includes(',')){raw=raw.replace(',','.');}
+ const num=Number(raw);
+ if(!raw||!Number.isFinite(num)||num<0||num>10000000)throw Error('Fila '+line+': precio inválido. Escribe un número (ej. 189.90).');
+ return Math.round(num*100)/100;
+}
 function textURL(url,line){
  const v=String(url||'').trim();
  if(v&&!/^https:\/\//i.test(v))throw Error('Fila '+line+': usa URL HTTPS para fotografías.');
