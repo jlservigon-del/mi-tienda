@@ -26,15 +26,15 @@ function card(p){
  const photo=document.createElement("div");photo.className="pic";
  if(safeImg(p.image_url)){const img=document.createElement("img");img.src=p.image_url;img.alt="Imagen editorial de referencia del artículo "+p.name;img.loading="lazy";photo.append(img);}
  else photo.append(text("span","Fotografía próximamente","image-placeholder"));
- if(p.is_demo)photo.append(text("span","MUESTRA / DEMO","demo-ribbon"));
+ if(p.is_demo)photo.append(text("span",p.variant_group?"FOTO REAL · PENDIENTE":"MUESTRA / DEMO","demo-ribbon"));
  const info=document.createElement("div");info.className="info";
  info.append(text("p",brandOf(p),"brand-label"),text("h3",p.name));
- const price=text("div",money(p.price)+(p.is_demo?" · referencial":""),"price");
+ const price=text("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · referencial":""):"Precio por confirmar","price");
  info.append(price);
  const detail=document.createElement("a");detail.href="./producto.html?id="+encodeURIComponent(p.id);detail.className="catalog-detail";detail.textContent="Ver detalles ↗";info.append(detail);
  const add=document.createElement("button");add.className="category-add";
  add.disabled=Boolean(p.is_demo)||!(p.stock>0);
- add.textContent=p.is_demo?"Solo demostración":p.stock>0?"Agregar al carrito":"Agotado";
+ add.textContent=p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado";
  add.onclick=()=>addToCart(p);info.append(add);article.append(photo,info);return article;
 }
 function render(){
