@@ -1,5 +1,5 @@
 // PERSONALIZA ESTOS VALORES CON LOS DATOS REALES DE TU TIENDA.
-const CONFIG={storeName:"Nova Studio",whatsappNumber:"51999999999",currency:"PEN"};
+const CONFIG={storeName:"Miami Store",whatsappNumber:"51999999999",currency:"PEN"};
 const PRODUCTS=[
 {id:1,name:"Lámpara de mesa",category:"Decoración",price:89,tag:"Favorito",image:"https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=650&auto=format&fit=crop&q=80"},
 {id:2,name:"Taza de cerámica",category:"Hogar",price:35,tag:"Nuevo",image:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=650&auto=format&fit=crop&q=80"},
@@ -12,9 +12,9 @@ const PRODUCTS=[
 const PHOTOS=[{name:"Inspiración",url:"https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=900&auto=format&fit=crop&q=80"},{name:"Detalles",url:"https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=650&auto=format&fit=crop&q=80"},{name:"Espacios",url:"https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=650&auto=format&fit=crop&q=80"},{name:"Estilo",url:"https://images.unsplash.com/photo-1483985988355-763728e1935b?w=650&auto=format&fit=crop&q=80"},{name:"Creatividad",url:"https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=650&auto=format&fit=crop&q=80"}];
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("es-PE",{style:"currency",currency:CONFIG.currency}).format(n);
 let cart={},filter="Todos",previousFocus=null,timer;
-try{let saved=JSON.parse(localStorage.getItem("novaCart")||"{}");for(let [id,qty] of Object.entries(saved)){if(PRODUCTS.some(p=>p.id===Number(id))&&Number.isInteger(qty)&&qty>0&&qty<=99)cart[id]=qty;}}catch{}
+try{let saved=JSON.parse(localStorage.getItem("miamiStoreCart")||"{}");for(let [id,qty] of Object.entries(saved)){if(PRODUCTS.some(p=>p.id===Number(id))&&Number.isInteger(qty)&&qty>0&&qty<=99)cart[id]=qty;}}catch{}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");clearTimeout(timer);timer=setTimeout(()=>$("toast").classList.remove("show"),2500);}
-function persist(){try{localStorage.setItem("novaCart",JSON.stringify(cart));}catch{}renderCart();}
+function persist(){try{localStorage.setItem("miamiStoreCart",JSON.stringify(cart));}catch{}renderCart();}
 function renderFilters(){$("filters").innerHTML=["Todos",...new Set(PRODUCTS.map(p=>p.category))].map(c=>'<button type="button" data-filter="'+c+'" aria-pressed="'+(c===filter)+'" class="'+(c===filter?"active":"")+'">'+c+"</button>").join("");}
 function renderProducts(){$("products").innerHTML=PRODUCTS.filter(p=>filter==="Todos"||p.category===filter).map(p=>'<article class="product-card"><div class="product-photo"><img src="'+p.image+'" alt="'+p.name+'" loading="lazy">'+(p.tag?'<span class="tag">'+p.tag+"</span>":"")+'</div><p class="category">'+p.category+"</p><h3>"+p.name+'</h3><div class="product-bottom"><strong>'+money(p.price)+'</strong><button type="button" data-add="'+p.id+'">+ Agregar</button></div></article>').join("");}
 function renderGallery(){$("gallery").innerHTML=PHOTOS.map((p,i)=>'<button class="gallery-tile" type="button" data-photo="'+i+'" aria-label="Ampliar '+p.name+'"><img src="'+p.url+'" loading="lazy" alt="'+p.name+'"><span>'+p.name+"</span></button>").join("");}
