@@ -1,5 +1,6 @@
 // Solo incluir URL y clave publicable (publishable/anon). NUNCA service_role ni secret keys.
 window.STORE_CONFIG = {
+  storeName: "Miami Store",
   supabaseUrl: "",
   supabasePublishableKey: "",
   paymentInstructions: {
