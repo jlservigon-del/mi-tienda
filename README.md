@@ -37,3 +37,12 @@ Sitio HTML/CSS/JavaScript desplegable en GitHub Pages. Contiene tienda, carrito,
 ## Comprobaciones mínimas
 
 Sin proyecto Supabase, todas las operaciones reales quedan inactivas. Una vez conectado: comprobar que un cliente no edita productos, ni visualiza pedidos ajenos; admin sí edita catálogo; cantidades no pueden volverse negativas; no puede ordenar más unidades que stock disponible. Deben ejecutarse pruebas RLS del lado de Supabase antes de recibir pedidos reales.
+
+
+## Presentación comercial — sábado 31 de octubre de 2026
+
+La página muestra una galería **DEMOSTRATIVA** con artículos y precios de referencia cuando el catálogo real está vacío. No representa inventario, pagos ni ventas reales. Cuando se publiquen productos reales desde el panel, la tienda cambiará al catálogo dinámico. El acceso al panel depende de iniciar sesión con la cuenta autorizada, no de conocer una contraseña compartida en mensajes.
+
+**Checklist de presentación:** comprobar versión publicada en GitHub Pages, iniciar sesión administrador, crear un producto de prueba claramente identificado (y eliminarlo después), verificar pantalla móvil, registrar un cliente de prueba, revisar consentimiento y políticas antes de usar datos de clientes reales. No realizar transferencias reales durante la demo.
+
+**Seguridad:** ante cualquier contraseña expuesta en una conversación, cambiarla en Supabase Auth y habilitar protección contra contraseñas filtradas si el plan lo permite. No compartir contraseñas por chat.
