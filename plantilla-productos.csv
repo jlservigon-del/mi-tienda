@@ -1,0 +1,3 @@
+﻿sku;nombre;marca;categoria;color;talla;grupo_variantes;precio_soles;stock;foto_principal;foto_2;foto_3;descripcion;publicar;es_demo
+MK-BOL-001;"Bolso crossbody de monograma · Beige/Camel";"Michael Kors";Accesorios;Beige/Camel;Única;mk-crossbody-duotone;0;0;https://raw.githubusercontent.com/jlservigon-del/mi-tienda/main/assets/products/mk-camel.webp;;;"Fotografía aportada por el cliente, precio y stock por confirmar";NO;SI
+MK-BOL-002;"Bolso crossbody de monograma · Rosa";"Michael Kors";Accesorios;Rosa;Única;mk-crossbody-duotone;0;0;https://raw.githubusercontent.com/jlservigon-del/mi-tienda/main/assets/products/mk-rosa.webp;;;"Fotografía aportada por el cliente, precio y stock por confirmar";NO;SI
