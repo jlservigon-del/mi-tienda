@@ -99,3 +99,14 @@ La interfaz, la clave publicable de Supabase y las fotografías de muestra son p
 5. En pedidos pagados, la cancelación y el reembolso deben gestionarse manualmente fuera del flujo automático actual.
 
 Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Facebook e Instagram.
+
+## WhatsApp de vendedores y apertura de la web (29 de octubre de 2026)
+
+- La navegación de las páginas públicas y el panel incorpora `page-top.js`, que desactiva la restauración de posición y muestra la parte superior al entrar o recargar. Los enlaces con # conservan la navegación interna al hacer clic.
+- Se retiraron las flechas de texto y los símbolos de verificación decorativos en páginas y productos dinámicos. Los controles anterior/siguiente del carrusel usan SVG.
+- Se creó la tabla `store_contact_channels` con RLS; **solo administradores** pueden configurar el teléfono comercial de ventas.
+- En `admin.html`, sección **WhatsApp de atención y ventas**, introducir teléfono con prefijo (por ejemplo, en Perú código 51 y 9 dígitos), un mensaje comercial de saludo y marcar autorización del propietario.
+- Si el número no está verificado, la web muestra “WhatsApp: atención por habilitar” y no envía a un destino ficticio.
+- Al activar un teléfono validado, `whatsapp-contact.js` genera el enlace seguro `https://wa.me/<numero>?text=<mensaje-codificado>`; el visitante abre WhatsApp y **debe pulsar Enviar**. Desde una ficha de producto el texto incluye el nombre de la referencia y el enlace a su página.
+- **No es un chatbot** ni responde automáticamente: el envío de mensajes y las respuestas de vendedores ocurren dentro de WhatsApp. La integración WhatsApp Business Platform/Cloud API para agentes, alertas y pedidos será una fase posterior.
+- Nunca solicitar o subir credenciales de WhatsApp ni números privados de trabajadores sin autorización.
