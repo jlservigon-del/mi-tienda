@@ -1,0 +1,8 @@
+import {db,configured,currentUser,errorText} from './store-client.js';
+const $=id=>document.getElementById(id);
+async function refresh(){const u=await currentUser();$('session').textContent=u?'Sesión: '+u.email:'No has iniciado sesión';$('logout').hidden=!u;$('profile').hidden=!u;if(u){const {data}=await db.from('customer_profiles').select('*').eq('user_id',u.id).maybeSingle();if(data){$('fullName').value=data.full_name;$('phone').value=data.phone;$('address').value=data.address;}}}
+$('status').textContent=configured?'Crea tu cuenta o inicia sesión.':'Primero configura Supabase en store-config.js. No se almacenarán datos hasta entonces.';
+$('authForm').addEventListener('submit',async e=>{e.preventDefault();if(!db)return;const f=new FormData(e.target),email=String(f.get('email')).trim(),password=String(f.get('password'));$('status').textContent='Procesando...';const {error}=f.get('mode')==='register'?await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}}):await db.auth.signInWithPassword({email,password});$('status').textContent=error?errorText(error):'Solicitud completada. Si te registraste, revisa tu email para confirmar la cuenta.';await refresh();});
+$('profileForm').addEventListener('submit',async e=>{e.preventDefault();const u=await currentUser();if(!u)return;const payload={user_id:u.id,full_name:$('fullName').value.trim(),phone:$('phone').value.trim(),address:$('address').value.trim()};const {error}=await db.from('customer_profiles').upsert(payload,{onConflict:'user_id'});$('status').textContent=error?errorText(error):'Perfil guardado.';});
+$('logout').addEventListener('click',async()=>{await db.auth.signOut();await refresh();});
+refresh();
