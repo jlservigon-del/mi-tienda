@@ -46,3 +46,36 @@ La página muestra una galería **DEMOSTRATIVA** con artículos y precios de ref
 **Checklist de presentación:** comprobar versión publicada en GitHub Pages, iniciar sesión administrador, crear un producto de prueba claramente identificado (y eliminarlo después), verificar pantalla móvil, registrar un cliente de prueba, revisar consentimiento y políticas antes de usar datos de clientes reales. No realizar transferencias reales durante la demo.
 
 **Seguridad:** ante cualquier contraseña expuesta en una conversación, cambiarla en Supabase Auth y habilitar protección contra contraseñas filtradas si el plan lo permite. No compartir contraseñas por chat.
+
+## Catálogo demostrativo J&M Business — octubre 2026
+
+Se añadieron 13 productos de muestra en Supabase y el campo `products.is_demo` (true para artículos ficticios). Marcas de referencia: Tommy Hilfiger, Lacoste, Calvin Klein, Ralph Lauren, Guess, Victoria's Secret y Bath & Body Works.
+
+**IMPORTANTE:** todas las fichas de muestra tienen `stock = 0`, precios ilustrativos y fotografías editoriales genéricas de Unsplash. No son fotografías verificadas de productos físicos ni prueban representación oficial o autenticidad. La tienda muestra DEMO en las tarjetas; no permite agregarlas al carrito; `place_order` rechaza pedidos que contengan muestras aun cuando un cliente altere el HTML.
+
+### Páginas de demostración
+- `/` — portada con campañas, carrusel, búsqueda y colecciones.
+- `/hombre.html`, `/mujer.html`, `/accesorios.html`, `/belleza.html` — categorías con filtros.
+- `/marca.html?marca=Bath%20%26%20Body%20Works` — colecciones por marca.
+- `/marca.html?marca=Victoria%27s%20Secret` — sección Victoria's Secret.
+- `/producto.html?id=UUID` — ficha individual con talla, presentación y cantidad.
+- `/admin.html` — listado, edición de productos, marcas, tallas, distintivo DEMO y stock; métricas básicas.
+
+### Para poner un producto a la venta
+1. Obtener permiso de uso para la fotografía de producto, o tomar foto real del artículo.
+2. Confirmar con el propietario marca, modelo, autenticidad, tallas y stock físico.
+3. Actualizar precio real y descripción.
+4. Desmarcar `DEMO` únicamente después de la validación comercial; registrar stock real.
+5. Probar pedido con un cliente de pruebas, pago manual y descuento de inventario antes de operar en producción.
+
+### Mejoras futuras
+- Imágenes alojadas en Supabase Storage con permisos y estructura por producto.
+- Inventario por SKU/talla/color (hoy el stock se contabiliza por producto general).
+- Integración de pagos por pasarela autorizada y validación del pago con webhooks firmados en backend.
+- WhatsApp Business Platform para tomar pedidos y avisar al dueño sobre ventas pendientes y stock bajo.
+- Políticas comerciales, privacidad, devoluciones, envío y comprobantes según normativa de Perú.
+- Analítica de GA4/Meta con configuración de consentimiento cuando corresponda.
+- Ver `marketing/PLAN_CM_MIAMI_STORE.md` para el plan de Community Management de J&M Business.
+
+### Seguridad
+La interfaz, la clave publicable de Supabase y las fotografías de muestra son públicas. **Nunca subir** service_role, contraseñas, claves de pagos ni datos de clientes a GitHub. Revisar los avisos de seguridad en Supabase antes de activar cobros.
