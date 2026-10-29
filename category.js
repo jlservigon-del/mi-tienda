@@ -31,7 +31,7 @@ function card(p){
  info.append(text("p",brandOf(p),"brand-label"),text("h3",p.name));
  const price=text("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · referencial":""):"Precio por confirmar","price");
  info.append(price);
- const detail=document.createElement("a");detail.href="./producto.html?id="+encodeURIComponent(p.id);detail.className="catalog-detail";detail.textContent="Ver detalles ↗";info.append(detail);
+ const detail=document.createElement("a");detail.href="./producto.html?id="+encodeURIComponent(p.id);detail.className="catalog-detail";detail.textContent="Ver detalles";info.append(detail);
  const add=document.createElement("button");add.className="category-add";
  add.disabled=Boolean(p.is_demo)||!(p.stock>0);
  add.textContent=p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado";
