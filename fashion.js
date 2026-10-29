@@ -1,7 +1,44 @@
-import {db,configured,money} from './store-client.js';
-import {addToCart} from './shop-cart.js';
-const slides=[...document.querySelectorAll('.slide')], dots=[...document.querySelectorAll('.dots button')];let index=0;function show(n){index=(n+slides.length)%slides.length;slides.forEach((x,i)=>x.classList.toggle('active',i===index));dots.forEach((x,i)=>x.classList.toggle('on',i===index));}document.querySelector('.prev').onclick=()=>show(index-1);document.querySelector('.next').onclick=()=>show(index+1);dots.forEach((b,i)=>b.onclick=()=>show(i));setInterval(()=>{if(!document.hidden)show(index+1)},6000);
-const demos=[['Polo casual clásico','Hombre','https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700&auto=format&fit=crop&q=85'],['Camisa urbana','Hombre','https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=700&auto=format&fit=crop&q=85'],['Estilo denim','Mujer','https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=700&auto=format&fit=crop&q=85'],['Bolso lifestyle','Accesorios','https://images.unsplash.com/photo-1547949003-9792a18a2601?w=700&auto=format&fit=crop&q=85']];
-const grid=document.getElementById('catalog');
-function item(p,real){const card=document.createElement('article');card.className='item';const pic=document.createElement('div');pic.className='pic';const img=document.createElement('img');img.src=p.image_url||p[2];img.alt=p.name||p[0];img.loading='lazy';pic.append(img);const info=document.createElement('div');info.className='info';const type=document.createElement('p');type.textContent=p.category||p[1];const title=document.createElement('h3');title.textContent=p.name||p[0];const price=document.createElement('div');price.className=real?'price':'demo-label';price.textContent=real?money(p.price):'Imagen de referencia · Precio por definir';info.append(type,title,price);if(real){const stock=document.createElement('p');stock.textContent=p.stock>0?'Disponibles: '+p.stock:'Sin stock';info.append(stock);const add=document.createElement('button');add.className='category-add';add.textContent=p.stock>0?'Agregar al carrito':'Agotado';add.disabled=!(p.stock>0);add.onclick=()=>addToCart(p);info.append(add);}card.append(pic,info);grid.append(card);}
-async function load(){if(configured&&db){const {data,error}=await db.from('products').select('id,name,category,image_url,price,stock').eq('active',true).order('created_at',{ascending:false}).limit(12);if(!error&&data?.length){data.forEach(p=>item(p,true));document.getElementById('catalogStatus').textContent='Productos del catálogo conectado. Para comprar, inicia sesión en Mi cuenta.';document.getElementById('notice').textContent='Los pagos online todavía no están habilitados. Se deben validar los productos, métodos de pago y entrega con el comercio.';return;}}demos.forEach(p=>item(p,false));}load();
+import {db,configured,money} from "./store-client.js";
+import {addToCart} from "./shop-cart.js";
+const slides=[...document.querySelectorAll(".slide")],dots=[...document.querySelectorAll(".dots button")];
+let slideIndex=0;
+function showSlide(index){slideIndex=(index+slides.length)%slides.length;slides.forEach((s,i)=>s.classList.toggle("active",i===slideIndex));dots.forEach((b,i)=>b.classList.toggle("on",i===slideIndex));}
+document.querySelector(".prev")?.addEventListener("click",()=>showSlide(slideIndex-1));
+document.querySelector(".next")?.addEventListener("click",()=>showSlide(slideIndex+1));
+dots.forEach((b,i)=>b.addEventListener("click",()=>showSlide(i)));
+setInterval(()=>{if(!document.hidden&&slides.length)showSlide(slideIndex+1)},6500);
+const grid=document.getElementById("catalog"),status=document.getElementById("catalogStatus");
+let products=[],tab="Todas";
+function node(tag,content,cls){const e=document.createElement(tag);if(content!==undefined)e.textContent=content;if(cls)e.className=cls;return e;}
+function item(p){
+ const card=node("article",undefined,"item catalog-card");
+ const photo=node("div",undefined,"pic");
+ if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt="Fotografía editorial ilustrativa de "+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
+ else photo.append(node("span","Fotografía por agregar","image-placeholder"));
+ if(p.is_demo)photo.append(node("span","DEMO","demo-ribbon"));
+ const info=node("div",undefined,"info");info.append(node("p",p.brand||p.category,"brand-label"),node("h3",p.name));
+ info.append(node("div",money(p.price)+(p.is_demo?" · Precio de muestra":""),"price"+(p.is_demo?" product-price-reference":"")));
+ const link=node("a","Ver producto ↗","catalog-detail");link.href="./producto.html?id="+encodeURIComponent(p.id);info.append(link);
+ const btn=node("button",p.is_demo?"Solo demostración":p.stock>0?"Agregar al carrito":"Agotado","category-add");
+ btn.disabled=Boolean(p.is_demo)||!(p.stock>0);
+ btn.onclick=()=>addToCart(p);info.append(btn);card.append(photo,info);return card;
+}
+function render(){
+ const q=(document.getElementById("homeSearch")?.value||"").trim().toLocaleLowerCase("es");
+ const filtered=products.filter(p=>(tab==="Todas"||p.category===tab)&&(p.name+" "+p.category+" "+(p.brand||"")).toLocaleLowerCase("es").includes(q));
+ grid.replaceChildren(...filtered.map(item));
+ if(!filtered.length)grid.append(node("p","No se encontraron artículos para esta búsqueda. Cambia el término o la colección.","category-empty-message"));
+ status.textContent=filtered.length+" referencias encontradas. Los artículos marcados DEMO usan fotografías y precios ilustrativos y no están a la venta.";
+}
+document.getElementById("homeSearch")?.addEventListener("input",render);
+document.getElementById("catalogTabs")?.addEventListener("click",event=>{
+ const b=event.target.closest("[data-home-filter]");if(!b)return;tab=b.dataset.homeFilter;
+ document.querySelectorAll("[data-home-filter]").forEach(x=>x.classList.toggle("active",x===b));render();
+});
+async function load(){
+ if(!configured||!db){status.textContent="Catálogo no disponible: conexión pendiente.";return;}
+ const {data,error}=await db.from("products").select("id,name,brand,category,price,stock,image_url,is_demo").eq("active",true).order("created_at",{ascending:false}).limit(60);
+ if(error){status.textContent="No se pudo cargar el catálogo: "+error.message;return;}
+ products=data||[];render();
+}
+load();
