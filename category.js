@@ -1,15 +1,68 @@
 import {db,configured,money} from './store-client.js';
 import {addToCart} from './shop-cart.js';
 const $=id=>document.getElementById(id);
-const path=location.pathname.split('/').pop().toLowerCase();const categories={'hombre.html':{label:'Hombre',terms:['hombre','masculino','men']},'mujer.html':{label:'Mujer',terms:['mujer','femenino','women']},'accesorios.html':{label:'Accesorios',terms:['accesorios','accesorio','complementos']}};
-const current=categories[path]||categories['hombre.html'];
-document.title=current.label+' | Miami Store';$('categoryTitle').textContent='Moda '+current.label.toLowerCase();$('breadcrumbCurrent').textContent=current.label;$('resultsTitle').textContent='Colección '+current.label;$('categoryDescription').textContent='Explora nuestra selección de '+current.label.toLowerCase()+'. Filtra por marca, talla, precio y disponibilidad.';
-let items=[];const controls=['search','brand','size','minPrice','maxPrice','available','sort'];
-const getBrand=p=>p.brand||p.description?.match(/(?:marca|brand):\s*([^\n;,]+)/i)?.[1]?.trim()||'Sin marca especificada';
-const getSizes=p=>Array.isArray(p.sizes)?p.sizes.map(String):typeof p.sizes==='string'?p.sizes.split(',').map(x=>x.trim()):p.description?.match(/(?:tallas?|sizes?):\s*([^\n;.]+)/i)?.[1]?.split(',').map(x=>x.trim())||[];
-function options(id,values){const select=$(id),first=select.firstElementChild;select.replaceChildren(first);for(const value of [...new Set(values.filter(Boolean))].sort()){const option=document.createElement('option');option.value=value;option.textContent=value;select.append(option);}}
-function render(){const q=$('search').value.toLocaleLowerCase('es').trim(),brand=$('brand').value,size=$('size').value,min=Math.max(0,Number($('minPrice').value)||0),max=$('maxPrice').value===''?Infinity:Number($('maxPrice').value),avail=$('available').checked;let filtered=items.filter(p=>(p.name+' '+(p.description||'')).toLocaleLowerCase('es').includes(q)&&(!brand||getBrand(p)===brand)&&(!size||getSizes(p).includes(size))&&Number(p.price)>=min&&Number(p.price)<=max&&(!avail||Number(p.stock)>0));const order=$('sort').value;if(order==='priceAsc')filtered.sort((a,b)=>a.price-b.price);if(order==='priceDesc')filtered.sort((a,b)=>b.price-a.price);if(order==='name')filtered.sort((a,b)=>a.name.localeCompare(b.name));$('resultsCount').textContent=filtered.length+' producto(s)';$('empty').hidden=filtered.length!==0;$('categoryProducts').replaceChildren();const chips=$('filterChips');chips.replaceChildren();for(const s of [q,brand,size,min?('Desde S/ '+min):'',max!==Infinity?('Hasta S/ '+max):'',avail?'En stock':''].filter(Boolean)){const tag=document.createElement('span');tag.textContent=s;chips.append(tag);}for(const p of filtered){const article=document.createElement('article');article.className='item';const pic=document.createElement('div');pic.className='pic';if(p.image_url?.startsWith('https://')){const img=document.createElement('img');img.src=p.image_url;img.alt=p.name;img.loading='lazy';pic.append(img);}else pic.textContent='Imagen por agregar';const info=document.createElement('div');info.className='info';const category=document.createElement('p');category.textContent=getBrand(p);const title=document.createElement('h3');title.textContent=p.name;const price=document.createElement('div');price.className='price';price.textContent=money(p.price);const line=document.createElement('div');line.className='category-actions';const stock=document.createElement('span');stock.textContent=p.stock>0?'Disponible: '+p.stock:'Agotado';const link=document.createElement('a');link.href='./cuenta.html';link.textContent='Mi cuenta ↗';line.append(stock,link);info.append(category,title,price,line);const add=document.createElement('button');add.className='category-add';add.textContent=p.stock>0?'Agregar al carrito':'Agotado';add.disabled=!(p.stock>0);add.onclick=()=>addToCart(p);info.append(add);article.append(pic,info);$('categoryProducts').append(article);}}
-function reset(){for(const id of controls){const x=$(id);if(x.type==='checkbox')x.checked=false;else if(id==='sort')x.value='recent';else x.value='';}render();}
-$('resetFilters').onclick=reset;$('emptyReset').onclick=reset;for(const id of controls)$(id).addEventListener(['search','minPrice','maxPrice'].includes(id)?'input':'change',render);
-async function init(){if(!configured){$('dataStatus').textContent='Base de datos no configurada. No se exhibe inventario ficticio.';render();return;}const {data,error}=await db.from('products').select('*').eq('active',true).order('created_at',{ascending:false});if(error){$('dataStatus').textContent='Error al obtener catálogo: '+error.message;render();return;}items=(data||[]).filter(p=>current.terms.includes(String(p.category||'').trim().toLowerCase()));options('brand',items.map(getBrand));options('size',items.flatMap(getSizes));$('dataStatus').textContent=items.length?'Catálogo sincronizado con Miami Store.':'Aún no se han agregado productos a la sección '+current.label+'. Desde Administración puedes crear productos con la categoría exacta '+current.label+'.';render();}
+const path=location.pathname.split('/').pop().toLowerCase();
+const brandNames=["Tommy Hilfiger","Lacoste","Calvin Klein","Ralph Lauren","Guess","Victoria's Secret","Bath & Body Works"];
+const groups={"hombre.html":{label:"Hombre",terms:["hombre","masculino","men"]},"mujer.html":{label:"Mujer",terms:["mujer","femenino","women"]},"accesorios.html":{label:"Accesorios",terms:["accesorios","accesorio","complementos"]},"belleza.html":{label:"Belleza y fragancias",terms:["belleza","fragancias","cuidado corporal","cuidado personal","hogar & aromas"]}};
+const brandQuery=new URLSearchParams(location.search).get('marca')||'';
+const brandMode=path==="marca.html";
+const chosenBrand=brandNames.find(b=>b.toLocaleLowerCase('es')===brandQuery.toLocaleLowerCase('es'))||null;
+const group=groups[path]||groups["hombre.html"];
+const label=brandMode?(chosenBrand||"Marca"):group.label;
+document.title=label+" | Miami Store";
+$("categoryTitle").textContent=label;
+$("breadcrumbCurrent").textContent=label;
+$("resultsTitle").textContent=brandMode?"Selección "+label:"Explorar "+label;
+$("categoryDescription").textContent=brandMode?"Productos y referencias editoriales de "+label+". Los artículos de muestra no se encuentran a la venta.":"Explora, compara marcas y filtra por talla, precio y disponibilidad.";
+let items=[];
+const controlIds=["search","brand","size","minPrice","maxPrice","available","sort"];
+const brandOf=p=>String(p.brand||"Sin marca especificada");
+const sizesOf=p=>Array.isArray(p.sizes)?p.sizes.map(String):[];
+const safeImg=url=>/^https:\/\//i.test(String(url||""));
+const text=(tag,value,cls)=>{const e=document.createElement(tag);e.textContent=value;if(cls)e.className=cls;return e;};
+function fillOptions(id,values){const select=$(id),first=select.firstElementChild;select.replaceChildren(first);for(const val of [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"))){const option=text("option",val);option.value=val;select.append(option);}}
+function card(p){
+ const article=document.createElement("article");article.className="item catalog-card";
+ const photo=document.createElement("div");photo.className="pic";
+ if(safeImg(p.image_url)){const img=document.createElement("img");img.src=p.image_url;img.alt="Imagen editorial de referencia del artículo "+p.name;img.loading="lazy";photo.append(img);}
+ else photo.append(text("span","Fotografía próximamente","image-placeholder"));
+ if(p.is_demo)photo.append(text("span","MUESTRA / DEMO","demo-ribbon"));
+ const info=document.createElement("div");info.className="info";
+ info.append(text("p",brandOf(p),"brand-label"),text("h3",p.name));
+ const price=text("div",money(p.price)+(p.is_demo?" · referencial":""),"price");
+ info.append(price);
+ const detail=document.createElement("a");detail.href="./producto.html?id="+encodeURIComponent(p.id);detail.className="catalog-detail";detail.textContent="Ver detalles ↗";info.append(detail);
+ const add=document.createElement("button");add.className="category-add";
+ add.disabled=Boolean(p.is_demo)||!(p.stock>0);
+ add.textContent=p.is_demo?"Solo demostración":p.stock>0?"Agregar al carrito":"Agotado";
+ add.onclick=()=>addToCart(p);info.append(add);article.append(photo,info);return article;
+}
+function render(){
+ const q=$("search").value.toLocaleLowerCase("es").trim(),brand=$("brand").value,size=$("size").value;
+ const min=$("minPrice").value===""?0:Number($("minPrice").value),max=$("maxPrice").value===""?Infinity:Number($("maxPrice").value);
+ const available=$("available").checked;
+ let list=items.filter(p=>(p.name+" "+p.description+" "+brandOf(p)).toLocaleLowerCase("es").includes(q)&&(!brand||brandOf(p)===brand)&&(!size||sizesOf(p).includes(size))&&Number(p.price)>=min&&Number(p.price)<=max&&(!available||(p.stock>0&&!p.is_demo)));
+ const sort=$("sort").value;
+ if(sort==="priceAsc")list.sort((a,b)=>a.price-b.price);
+ if(sort==="priceDesc")list.sort((a,b)=>b.price-a.price);
+ if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name,"es"));
+ const grid=$("categoryProducts");grid.replaceChildren(...list.map(card));
+ $("resultsCount").textContent=list.length+" productos encontrados";
+ $("empty").hidden=list.length!==0;
+ const chips=$("filterChips");chips.replaceChildren();
+ for(const label of [q,brand,size,min?("Desde S/ "+min):"",max!==Infinity?("Hasta S/ "+max):"",available?"Con stock":""]){if(label)chips.append(text("span",label));}
+}
+function reset(){for(const id of controlIds){const input=$(id);if(input.type==="checkbox")input.checked=false;else if(id==="sort")input.value="recent";else input.value="";}render();}
+$("resetFilters").onclick=reset;$("emptyReset").onclick=reset;
+for(const id of controlIds)$(id).addEventListener(["search","minPrice","maxPrice"].includes(id)?"input":"change",render);
+async function init(){
+ if(!configured||!db){$("dataStatus").textContent="No se pudo conectar con la base de datos.";render();return;}
+ const {data,error}=await db.from("products").select("*").eq("active",true).order("created_at",{ascending:false});
+ if(error){$("dataStatus").textContent="Error al cargar catálogo: "+error.message;render();return;}
+ items=(data||[]).filter(p=>brandMode?Boolean(chosenBrand)&&brandOf(p)===chosenBrand:group.terms.includes(String(p.category||"").trim().toLocaleLowerCase("es")));
+ fillOptions("brand",items.map(brandOf));fillOptions("size",items.flatMap(sizesOf));
+ if(brandMode&&chosenBrand){$("brand").value=chosenBrand;}
+ $("dataStatus").textContent=items.some(p=>p.is_demo)?"Los productos marcados DEMO son muestras editoriales, con fotografías y precios referenciales. No están disponibles para compra.":"Catálogo conectado a Miami Store en Supabase.";
+ render();
+}
 init();
