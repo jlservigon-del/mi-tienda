@@ -19,7 +19,7 @@ grant select on public.products to anon,authenticated;
 grant insert,update,delete on public.products to authenticated;
 grant select,insert,update on public.customer_profiles to authenticated;
 grant select on public.orders,public.order_items to authenticated;
-grant update on public.orders to authenticated;
+grant update(payment_status,order_status) on public.orders to authenticated;
 create policy "admin self" on public.admin_users for select to authenticated using(user_id=(select auth.uid()));
 create policy "public active products" on public.products for select to anon,authenticated using(active or exists(select 1 from public.admin_users a where a.user_id=(select auth.uid())));
 create policy "admin create product" on public.products for insert to authenticated with check(exists(select 1 from public.admin_users a where a.user_id=(select auth.uid())));
