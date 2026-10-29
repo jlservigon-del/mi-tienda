@@ -110,3 +110,17 @@ Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Faceb
 - Al activar un teléfono validado, `whatsapp-contact.js` genera el enlace seguro `https://wa.me/<numero>?text=<mensaje-codificado>`; el visitante abre WhatsApp y **debe pulsar Enviar**. Desde una ficha de producto el texto incluye el nombre de la referencia y el enlace a su página.
 - **No es un chatbot** ni responde automáticamente: el envío de mensajes y las respuestas de vendedores ocurren dentro de WhatsApp. La integración WhatsApp Business Platform/Cloud API para agentes, alertas y pedidos será una fase posterior.
 - Nunca solicitar o subir credenciales de WhatsApp ni números privados de trabajadores sin autorización.
+
+## Inventario por Excel + fotografías (octubre 2026)
+- Plantilla Excel entregada en la conversación: `Plantilla_Miami_Store_Productos_Stock.xlsx`; hojas `CATALOGO`, `INSTRUCCIONES`, `CONTROL`.
+- Modelo CSV descargable desde administración: `plantilla-productos.csv`.
+- `admin.html` incorpora el importador de CSV UTF-8 y fotografías; módulo `admin-bulk.js`.
+- Una fila = un SKU único (variante de color o talla con existencia independiente); precio en PEN, stock total actual.
+- El importador hace vista previa y confirma explícitamente ANTES de modificar productos; hasta 100 SKU por archivo.
+- Si el SKU existe, actualiza ese registro; si no existe, crea una nueva referencia. No asigna stock ficticio a productos DEMO.
+- Fotografías: nombres `SKU.jpg`, `SKU_2.jpg`, `SKU_3.jpg`; se suben a un bucket público `miami-product-images` para servir fotos de catálogo, pero la carga está restringida por RLS a administradores.
+- Tamaño máximo por archivo de foto: 5 MB. No subir imágenes privadas ni de clientes a este bucket.
+- Para actualizar por lote desde Excel, exportar únicamente la hoja CATALOGO como CSV UTF-8 (también compatible con delimitador punto y coma de Excel regional).
+- Los primeros dos SKU `MK-BOL-001` y `MK-BOL-002` se asignaron a las variantes de bolsos Beige/Camel y Rosa; mantienen precio 0, stock 0, DEMO.
+- **Limitación:** el proceso reemplaza el stock total almacenado por el número del Excel, no suma entradas de mercadería. Antes de operación real con pedidos concurrentes, añadir libro de movimientos, auditoría e importación con control de concurrencia por SKU.
+- Pendiente de verificar: importación real en sesión autenticada; prueba web sin login confirma que el importador está protegido.
