@@ -1,4 +1,4 @@
-# Tienda Nova Studio — instalación y administración
+# Miami Store — instalación y administración
 
 Sitio HTML/CSS/JavaScript desplegable en GitHub Pages. Contiene tienda, carrito, registro obligatorio con Supabase Auth, perfil del comprador, pedidos persistentes, pagos manuales Yape/Plin/transferencia y panel administrativo de productos, precios, imágenes (URL HTTPS), stock, pedidos y estados.
 
