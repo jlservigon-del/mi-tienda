@@ -79,3 +79,23 @@ Se añadieron 13 productos de muestra en Supabase y el campo `products.is_demo` 
 
 ### Seguridad
 La interfaz, la clave publicable de Supabase y las fotografías de muestra son públicas. **Nunca subir** service_role, contraseñas, claves de pagos ni datos de clientes a GitHub. Revisar los avisos de seguridad en Supabase antes de activar cobros.
+
+## Actualización — navegación, redes y pedidos (29/10/2026)
+
+- Facebook compartido por J&M Business: https://www.facebook.com/share/19LYhWzg1d/?mibextid=wwXIfr
+- Instagram compartido: https://www.instagram.com/miami.store.peru_/
+- Los accesos se muestran en el pie de las páginas públicas mediante `social-links.js` / `social-links.css`; **no se ha realizado ninguna publicación** ni se han verificado estadísticas de los perfiles.
+- Enlace de administración oculto del encabezado público; se muestra al iniciar sesión exclusivamente si el usuario pertenece a `admin_users`.
+- `cuenta.html` incorpora **Mis pedidos**: historial de pedidos, estados de pago y entrega, y opción para adjuntar comprobante a un pedido pendiente desde almacenamiento privado (`my-orders.js`).
+- Cancelar un pedido **no pagado** desde administración repone automáticamente el stock mediante trigger `miami_order_state_guard_trigger`. Los pedidos cancelados no pueden reabrirse y los pedidos en preparación/despachados exigen pago verificado.
+- **Prueba SQL controlada:** se validó la restitución de unidades y la prohibición de reabrir un pedido cancelado dentro de una transacción con `ROLLBACK`. Ningún artículo ni pedido de prueba quedó persistido.
+
+### Limitaciones que se mantienen
+
+1. El checkout no procesa pagos: Yape/Plin/transferencia siguen sin activarse hasta la configuración aprobada por el propietario.
+2. Los dos bolsos aportados usan fotografías reales de la referencia, pero carecen de precio, stock, modelo verificado y documentación comercial para venta.
+3. Falta prueba autenticada de extremo a extremo con cliente y administrador, además de ajustes legales y de seguridad previos al lanzamiento.
+4. No existe todavía automatización de WhatsApp ni de alertas al dueño.
+5. En pedidos pagados, la cancelación y el reembolso deben gestionarse manualmente fuera del flujo automático actual.
+
+Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Facebook e Instagram.
