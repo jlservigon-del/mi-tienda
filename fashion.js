@@ -15,11 +15,11 @@ function item(p){
  const photo=node("div",undefined,"pic");
  if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt="Fotografía editorial ilustrativa de "+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
  else photo.append(node("span","Fotografía por agregar","image-placeholder"));
- if(p.is_demo)photo.append(node("span","DEMO","demo-ribbon"));
+ if(p.is_demo)photo.append(node("span",p.variant_group?"FOTO REAL":"DEMO","demo-ribbon"));
  const info=node("div",undefined,"info");info.append(node("p",p.brand||p.category,"brand-label"),node("h3",p.name));
- info.append(node("div",money(p.price)+(p.is_demo?" · Precio de muestra":""),"price"+(p.is_demo?" product-price-reference":"")));
+ info.append(node("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar","price"+(p.is_demo?" product-price-reference":"")));
  const link=node("a","Ver producto ↗","catalog-detail");link.href="./producto.html?id="+encodeURIComponent(p.id);info.append(link);
- const btn=node("button",p.is_demo?"Solo demostración":p.stock>0?"Agregar al carrito":"Agotado","category-add");
+ const btn=node("button",p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado","category-add");
  btn.disabled=Boolean(p.is_demo)||!(p.stock>0);
  btn.onclick=()=>addToCart(p);info.append(btn);card.append(photo,info);return card;
 }
@@ -37,7 +37,7 @@ document.getElementById("catalogTabs")?.addEventListener("click",event=>{
 });
 async function load(){
  if(!configured||!db){status.textContent="Catálogo no disponible: conexión pendiente.";return;}
- const {data,error}=await db.from("products").select("id,name,brand,category,price,stock,image_url,is_demo").eq("active",true).order("created_at",{ascending:false}).limit(60);
+ const {data,error}=await db.from("products").select("id,name,brand,category,price,stock,image_url,is_demo,variant_group,color").eq("active",true).order("created_at",{ascending:false}).limit(60);
  if(error){status.textContent="No se pudo cargar el catálogo: "+error.message;return;}
  products=data||[];render();
 }
