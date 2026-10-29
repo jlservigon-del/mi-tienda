@@ -18,7 +18,7 @@ function item(p){
  if(p.is_demo)photo.append(node("span",p.variant_group?"FOTO REAL":"DEMO","demo-ribbon"));
  const info=node("div",undefined,"info");info.append(node("p",p.brand||p.category,"brand-label"),node("h3",p.name));
  info.append(node("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar","price"+(p.is_demo?" product-price-reference":"")));
- const link=node("a","Ver producto ↗","catalog-detail");link.href="./producto.html?id="+encodeURIComponent(p.id);info.append(link);
+ const link=node("a","Ver producto","catalog-detail");link.href="./producto.html?id="+encodeURIComponent(p.id);info.append(link);
  const btn=node("button",p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado","category-add");
  btn.disabled=Boolean(p.is_demo)||!(p.stock>0);
  btn.onclick=()=>addToCart(p);info.append(btn);card.append(photo,info);return card;
