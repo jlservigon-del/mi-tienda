@@ -4,7 +4,7 @@ Sitio HTML/CSS/JavaScript desplegable en GitHub Pages. Contiene tienda, carrito,
 
 ## Estado actual
 
-**La base de datos NO está conectada.** La tienda mostrará "en preparación" y bloqueará pedidos hasta la configuración. El contenido anterior era de demostración y permanece oculto. No se han creado clientes reales, productos reales ni pagos. Nunca uses claves privadas en GitHub.
+**La base de datos está conectada a Supabase.** La tienda mostrará "en preparación" y bloqueará pedidos hasta la configuración. El contenido anterior era de demostración y permanece oculto. No se han creado clientes reales, productos reales ni pagos. Nunca uses claves privadas en GitHub.
 
 ## Configuración necesaria
 
@@ -144,3 +144,10 @@ Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Faceb
 - Sin ofertas aprobadas, la página SALE permanece con un estado vacío. No se generan descuentos ficticios ni se modifican los precios de los cinco bolsos ya cargados.
 
 **Validación:** Se comprobó la estructura de la base y se guardaron los cambios en GitHub. La última prueba de navegador capturó aún el HTML previo en la portada (posible retraso de despliegue o caché), por lo que es necesario recargar cuando GitHub Pages termine de publicar para confirmar visualmente el nuevo diseño. La página `sale.html` respondió sin error durante la prueba.
+
+## Seguridad: actualización del 29 de octubre de 2026
+- `public.place_order` utiliza ahora `SECURITY INVOKER`; el despacho transaccional se valida dentro de un disparador privado sin permiso de invocación directa.
+- El Security Advisor ya no muestra la advertencia sobre funciones privilegiadas ejecutables por usuarios autenticados.
+- Persiste `auth_leaked_password_protection`: J&M Business está en Supabase Free y el control nativo requiere Pro. No se ha contratado un plan ni activado cobro alguno.
+- Nuevas cuentas: mínimo 12 caracteres en la interfaz; para seguridad real debe ajustarse también la política de Supabase Auth.
+- Se documentaron los tests transaccionales reversibles y las medidas de mitigación en [Auditoría de seguridad](docs/AUDITORIA_SEGURIDAD_2026-10-29.md).
