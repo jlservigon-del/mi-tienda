@@ -40,7 +40,9 @@ El sistema contiene otros 13 artículos ilustrativos, señalados como DEMO, sin 
 - Cargan el portal administrativo y su formulario de acceso; sin credenciales no se permite editar inventario.
 - La página SALE carga sin 404 y no inventa descuentos.
 - Portada: New Arrivals con 5 bolsos; tarjetas con imágenes y precios; carrusel de marcas.
-- [Por finalizar en revisión final] comportamiento completo del carrito y del checkout desde navegador anónimo.
+- **Verificado en navegador:** fichas de producto, selección de cantidad, añadir al carrito, contador, subtotal y navegación a checkout. Las opciones de pago aparecen deshabilitadas; el checkout exige sesión y no registra pedidos anónimos.
+- Desde **Mi cuenta** se comprobó el enlace a acceso administrativo sin credenciales.
+- Se verificó en navegación directa que Hombre, Mujer, Accesorios, Belleza, panel administrativo y pantalla de acceso cargan sin 404.
 - El inicio de sesión y el panel **con la cuenta administradora real** aún deben probarse por el titular, ya que no se ha usado su contraseña.
 - La importación de Excel/CSV y fotografía requiere una prueba autenticada antes de operar con inventario de mayor volumen.
 
@@ -62,3 +64,11 @@ El sistema contiene otros 13 artículos ilustrativos, señalados como DEMO, sin 
 ## Criterio de aceptación de Fase 1
 Se considera **presentable como demostración funcional** si la portada, categorías, fichas, carrito, SALE y el acceso al panel cargan correctamente y no se induce a un cobro real.
 Se considera **lista para ventas reales** solamente después de la configuración de cobros, validación de usuario administrador, pruebas end-to-end, operación de envío, políticas comerciales y revisión de seguridad.
+
+## Cierre de revisión visual — 29/10/2026
+- Se repitieron las rutas directas: 6 de 6 cargaron; el 404 inicialmente reportado no se reprodujo.
+- New Arrivals muestra cinco bolsos con fotografías y precios y el carrito calcula correctamente un subtotal.
+- Se añadieron controles **Vaciar** y **Ver carrito**, para que el cliente pueda reiniciar la selección durante la demostración.
+- Se corrigió el texto de las fichas reales: el precio y stock aparecen como datos publicados, pero el pago todavía debe habilitarse por el comercio.
+- El sistema tiene 18 referencias: 5 productos reales con 15 unidades, 13 muestras DEMO y ninguna oferta SALE.
+- Siguiente requisito obligatorio para operación: probar inicio de sesión con administrador real, fotografía e importación de inventario, y cobro manual con número autorizado; no se ingresaron credenciales durante la auditoría.
