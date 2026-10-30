@@ -133,3 +133,14 @@ Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Faceb
 - La portada ahora tiene carrusel horizontal de **8 marcas** con controles SVG y navegación táctil, incluyendo Michael Kors, y una galería horizontal de cinco accesorios en New Arrivals.
 - Los pagos Yape/Plin/transferencia siguen desactivados hasta que el administrador introduzca y confirme sus datos. Registrar existencia real no habilita procesar dinero.
 - Las fotografías generadas son versiones editadas a partir de las imágenes proporcionadas. Verificar con el comercio la exactitud del modelo y de las etiquetas antes de utilizarlas en publicidad definitiva.
+
+## Navegación compacta: marcas, New Arrivals y SALE
+- `index.html` usa un carrusel de marcas de UNA fila con desplazamiento horizontal, snap, botones SVG anterior/siguiente y soporte táctil. El CSS de corrección `storefront-refresh.css` se carga al final y se añade estilo base de fila como contingencia.
+- `New Arrivals` aparece inmediatamente encima de *Explorar productos* y se carga automáticamente con artículos reales recientes de Supabase (no una lista fija por SKU). La portada incorpora el filtro `New Arrivals`.
+- `SALE` aparece en el menú de navegación, menú móvil, filtros de la portada y `sale.html`.
+- Tabla `public.products`: nuevos campos `is_sale boolean default false` y `compare_at_price numeric(12,2)`. La base prohíbe marcar SALE en un producto DEMO o sin precio anterior superior al de venta.
+- Administración: marcar **SALE** y proporcionar el **precio anterior verificable** para publicar una liquidación real. Se muestran precio normal tachado, precio nuevo, descuento calculado y etiqueta SALE.
+- La importación CSV admite opcionalmente columnas `sale` (SI/NO) y `precio_anterior_soles`, preservando el estado existente cuando faltan.
+- Sin ofertas aprobadas, la página SALE permanece con un estado vacío. No se generan descuentos ficticios ni se modifican los precios de los cinco bolsos ya cargados.
+
+**Validación:** Se comprobó la estructura de la base y se guardaron los cambios en GitHub. La última prueba de navegador capturó aún el HTML previo en la portada (posible retraso de despliegue o caché), por lo que es necesario recargar cuando GitHub Pages termine de publicar para confirmar visualmente el nuevo diseño. La página `sale.html` respondió sin error durante la prueba.
