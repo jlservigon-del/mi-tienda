@@ -124,3 +124,12 @@ Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Faceb
 - Los primeros dos SKU `MK-BOL-001` y `MK-BOL-002` se asignaron a las variantes de bolsos Beige/Camel y Rosa; mantienen precio 0, stock 0, DEMO.
 - **Limitación:** el proceso reemplaza el stock total almacenado por el número del Excel, no suma entradas de mercadería. Antes de operación real con pedidos concurrentes, añadir libro de movimientos, auditoría e importación con control de concurrencia por SKU.
 - Pendiente de verificar: importación real en sesión autenticada; prueba web sin login confirma que el importador está protegido.
+
+## Actualización comercial — cinco accesorios con inventario confirmado
+
+- Se publicaron tres fotografías editadas (fondo blanco) de los bolsos Tommy Hilfiger en `assets/products/tommy-marron.webp`, `tommy-azul.webp` y `tommy-negro.webp`.
+- El propietario informó los precios y existencias: `TH-BOL-001` marrón S/249 (3), `TH-BOL-002` azul S/229 (3), `TH-BOL-003` negro S/229 (3), `MK-BOL-001` beige S/349 (3), `MK-BOL-002` rosa S/349 (3).
+- Total registrado: **15 unidades**, todas como productos activos no DEMO, cada color/modelo con SKU individual. Los demás 13 productos editoriales anteriores permanecen como DEMO sin stock.
+- La portada ahora tiene carrusel horizontal de **8 marcas** con controles SVG y navegación táctil, incluyendo Michael Kors, y una galería horizontal de cinco accesorios en New Arrivals.
+- Los pagos Yape/Plin/transferencia siguen desactivados hasta que el administrador introduzca y confirme sus datos. Registrar existencia real no habilita procesar dinero.
+- Las fotografías generadas son versiones editadas a partir de las imágenes proporcionadas. Verificar con el comercio la exactitud del modelo y de las etiquetas antes de utilizarlas en publicidad definitiva.
