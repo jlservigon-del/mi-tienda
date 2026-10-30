@@ -6,14 +6,15 @@ const brandNames=["Michael Kors","Tommy Hilfiger","Lacoste","Calvin Klein","Ralp
 const groups={"hombre.html":{label:"Hombre",terms:["hombre","masculino","men"]},"mujer.html":{label:"Mujer",terms:["mujer","femenino","women"]},"accesorios.html":{label:"Accesorios",terms:["accesorios","accesorio","complementos"]},"belleza.html":{label:"Belleza y fragancias",terms:["belleza","fragancias","cuidado corporal","cuidado personal","hogar & aromas"]}};
 const brandQuery=new URLSearchParams(location.search).get('marca')||'';
 const brandMode=path==="marca.html";
+const saleMode=path==='sale.html';
 const chosenBrand=brandNames.find(b=>b.toLocaleLowerCase('es')===brandQuery.toLocaleLowerCase('es'))||null;
 const group=groups[path]||groups["hombre.html"];
-const label=brandMode?(chosenBrand||"Marca"):group.label;
+const label=saleMode?'SALE':brandMode?(chosenBrand||"Marca"):group.label;
 document.title=label+" | Miami Store";
 $("categoryTitle").textContent=label;
 $("breadcrumbCurrent").textContent=label;
-$("resultsTitle").textContent=brandMode?"Selección "+label:"Explorar "+label;
-$("categoryDescription").textContent=brandMode?"Explora la selección de "+label+", filtra por precio y disponibilidad. Los artículos DEMO son únicamente ilustrativos.":"Explora, compara marcas y filtra por talla, precio y disponibilidad.";
+$("resultsTitle").textContent=saleMode?'Liquidaciones disponibles':brandMode?"Selección "+label:"Explorar "+label;
+$("categoryDescription").textContent=saleMode?'Ofertas y liquidaciones con precios anteriores verificados. Solo se muestran productos autorizados para SALE.':brandMode?"Explora la selección de "+label+", filtra por precio y disponibilidad. Los artículos DEMO son únicamente ilustrativos.":"Explora, compara marcas y filtra por talla, precio y disponibilidad.";
 let items=[];
 const controlIds=["search","brand","size","minPrice","maxPrice","available","sort"];
 const brandOf=p=>String(p.brand||"Sin marca especificada");
@@ -26,11 +27,15 @@ function card(p){
  const photo=document.createElement("div");photo.className="pic";
  if(safeImg(p.image_url)){const img=document.createElement("img");img.src=p.image_url;img.alt="Fotografía del producto "+p.name;img.loading="lazy";img.decoding="async";photo.append(img);}
  else photo.append(text("span","Fotografía próximamente","image-placeholder"));
- if(p.is_demo)photo.append(text("span",p.variant_group?"FOTO REAL · PENDIENTE":"MUESTRA / DEMO","demo-ribbon"));
+ if(p.is_sale)photo.append(text("span","SALE","sale-ribbon"));
+ else if(p.is_demo)photo.append(text("span",p.variant_group?"FOTO REAL · PENDIENTE":"MUESTRA / DEMO","demo-ribbon"));
  const info=document.createElement("div");info.className="info";
  info.append(text("p",brandOf(p),"brand-label"),text("h3",p.name));
- const price=text("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · referencial":""):"Precio por confirmar","price");
- info.append(price);
+ if(p.is_sale&&Number(p.compare_at_price)>Number(p.price)){
+ const row=document.createElement('div');row.className='sale-price';
+ row.append(text('span',money(p.price),'now'),text('span',money(p.compare_at_price),'was'),text('span','-'+Math.round((1-p.price/p.compare_at_price)*100)+'%','discount'));
+ info.append(row);
+ }else info.append(text("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · referencial":""):"Precio por confirmar","price"));
  const detail=document.createElement("a");detail.href="./producto.html?id="+encodeURIComponent(p.id);detail.className="catalog-detail";detail.textContent="Ver detalles";info.append(detail);
  const add=document.createElement("button");add.className="category-add";
  add.disabled=Boolean(p.is_demo)||!(p.stock>0);
@@ -46,6 +51,7 @@ function render(){
  if(sort==="priceAsc")list.sort((a,b)=>a.price-b.price);
  if(sort==="priceDesc")list.sort((a,b)=>b.price-a.price);
  if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name,"es"));
+ if(sort==="discount")list.sort((a,b)=>((1-b.price/b.compare_at_price)-(1-a.price/a.compare_at_price)));
  const grid=$("categoryProducts");grid.replaceChildren(...list.map(card));
  $("resultsCount").textContent=list.length+" productos encontrados";
  $("empty").hidden=list.length!==0;
@@ -59,10 +65,11 @@ async function init(){
  if(!configured||!db){$("dataStatus").textContent="No se pudo conectar con la base de datos.";render();return;}
  const {data,error}=await db.from("products").select("*").eq("active",true).order("created_at",{ascending:false});
  if(error){$("dataStatus").textContent="Error al cargar catálogo: "+error.message;render();return;}
- items=(data||[]).filter(p=>brandMode?Boolean(chosenBrand)&&brandOf(p)===chosenBrand:group.terms.includes(String(p.category||"").trim().toLocaleLowerCase("es")));
+ items=(data||[]).filter(p=>saleMode?Boolean(p.is_sale)&&!p.is_demo&&Number(p.compare_at_price)>Number(p.price):brandMode?Boolean(chosenBrand)&&brandOf(p)===chosenBrand:group.terms.includes(String(p.category||"").trim().toLocaleLowerCase("es")));
  fillOptions("brand",items.map(brandOf));fillOptions("size",items.flatMap(sizesOf));
  if(brandMode&&chosenBrand){$("brand").value=chosenBrand;}
- $("dataStatus").textContent=items.some(p=>p.is_demo)?"Los productos marcados DEMO son muestras editoriales, con fotografías y precios referenciales. No están disponibles para compra.":"Catálogo conectado a Miami Store en Supabase.";
+ if(saleMode){$("empty").querySelector("h3").textContent="Próximamente: nuevas liquidaciones";$("empty").querySelector("p").textContent="Aún no hay descuentos confirmados. Descubre mientras tanto nuestros productos disponibles.";$("emptyReset").textContent="Limpiar filtros";}
+ $("dataStatus").textContent=saleMode?"Las ofertas SALE aparecerán únicamente cuando sean publicadas por Administración con un precio anterior verificable.":items.some(p=>p.is_demo)?"Los productos marcados DEMO son muestras editoriales, con fotografías y precios referenciales. No están disponibles para compra.":"Catálogo conectado a Miami Store en Supabase.";
  render();
 }
 init();
