@@ -8,16 +8,22 @@ document.querySelector(".next")?.addEventListener("click",()=>showSlide(slideInd
 dots.forEach((b,i)=>b.addEventListener("click",()=>showSlide(i)));
 setInterval(()=>{if(!document.hidden&&slides.length)showSlide(slideIndex+1)},6500);
 const grid=document.getElementById("catalog"),status=document.getElementById("catalogStatus");
-let products=[],tab="Todas";
+let products=[],tab="Todas";let newestIds=new Set();
 function node(tag,content,cls){const e=document.createElement(tag);if(content!==undefined)e.textContent=content;if(cls)e.className=cls;return e;}
 function item(p){
  const card=node("article",undefined,"item catalog-card");
  const photo=node("div",undefined,"pic");
  if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt="Fotografía editorial ilustrativa de "+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
  else photo.append(node("span","Fotografía por agregar","image-placeholder"));
- if(p.is_demo)photo.append(node("span",p.variant_group?"FOTO REAL":"DEMO","demo-ribbon"));
+ if(p.is_sale)photo.append(node("span","SALE","sale-ribbon"));
+ else if(p.is_demo)photo.append(node("span",p.variant_group?"FOTO REAL":"DEMO","demo-ribbon"));
+ else if(newestIds.has(p.id))photo.append(node("span","NEW ARRIVAL","demo-ribbon"));
  const info=node("div",undefined,"info");info.append(node("p",p.brand||p.category,"brand-label"),node("h3",p.name));
- info.append(node("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar","price"+(p.is_demo?" product-price-reference":"")));
+ if(p.is_sale&&Number(p.compare_at_price)>Number(p.price)){
+  const prices=node('div',undefined,'sale-price');
+  prices.append(node('span',money(p.price),'now'),node('span',money(p.compare_at_price),'was'),node('span','-'+Math.round((1-p.price/p.compare_at_price)*100)+'%','discount'));
+  info.append(prices);
+ }else info.append(node("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar","price"+(p.is_demo?" product-price-reference":"")));
  const link=node("a","Ver producto","catalog-detail");link.href="./producto.html?id="+encodeURIComponent(p.id);info.append(link);
  const btn=node("button",p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado","category-add");
  btn.disabled=Boolean(p.is_demo)||!(p.stock>0);
@@ -25,10 +31,16 @@ function item(p){
 }
 function render(){
  const q=(document.getElementById("homeSearch")?.value||"").trim().toLocaleLowerCase("es");
- const filtered=products.filter(p=>(tab==="Todas"||p.category===tab)&&(p.name+" "+p.category+" "+(p.brand||"")).toLocaleLowerCase("es").includes(q));
+ const filtered=products.filter(p=>{
+  const correct=tab==='New Arrivals'?newestIds.has(p.id)&&!p.is_demo:tab==='SALE'?p.is_sale&&!p.is_demo:tab==='Todas'||p.category===tab;
+  return correct&&(p.name+" "+p.category+" "+(p.brand||"")).toLocaleLowerCase("es").includes(q);
+ });
  grid.replaceChildren(...filtered.map(item));
- if(!filtered.length)grid.append(node("p","No se encontraron artículos para esta búsqueda. Cambia el término o la colección.","category-empty-message"));
- status.textContent=filtered.length+" referencias encontradas. Los artículos marcados DEMO usan fotografías y precios ilustrativos y no están a la venta.";
+ if(!filtered.length){
+  const empty=tab==='SALE'?"Todavía no hay artículos en liquidación. Aquí aparecerán las ofertas aprobadas por Miami Store.":tab==='New Arrivals'?"Aún no hay novedades disponibles. Prueba con otra categoría.":"No se encontraron artículos para esta búsqueda. Cambia el término o la colección.";
+  grid.append(node("p",empty,"category-empty-message"));
+ }
+ status.textContent=tab==="SALE"?filtered.length+" artículos en liquidación aprobada.":tab==="New Arrivals"?filtered.length+" productos recién incorporados al catálogo.":filtered.length+" referencias encontradas. Los productos DEMO son únicamente ilustrativos.";
 }
 document.getElementById("homeSearch")?.addEventListener("input",render);
 document.getElementById("catalogTabs")?.addEventListener("click",event=>{
@@ -37,8 +49,8 @@ document.getElementById("catalogTabs")?.addEventListener("click",event=>{
 });
 async function load(){
  if(!configured||!db){status.textContent="Catálogo no disponible: conexión pendiente.";return;}
- const {data,error}=await db.from("products").select("id,name,brand,category,price,stock,image_url,is_demo,variant_group,color").eq("active",true).order("created_at",{ascending:false}).limit(60);
+ const {data,error}=await db.from("products").select("id,name,brand,category,price,stock,image_url,is_demo,variant_group,color,is_sale,compare_at_price,created_at").eq("active",true).order("created_at",{ascending:false}).limit(60);
  if(error){status.textContent="No se pudo cargar el catálogo: "+error.message;return;}
- products=data||[];render();
+ products=data||[];newestIds=new Set(products.filter(p=>!p.is_demo).slice(0,8).map(p=>p.id));render();
 }
 load();
