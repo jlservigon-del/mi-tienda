@@ -11,9 +11,16 @@ async function load(){
  document.title=p.name+" | Miami Store";
  $("productBrand").textContent=p.brand||"Miami Store";$("productTitle").textContent=p.name;
  $("productDescription").textContent=p.is_demo?"Ficha de demostración con datos ilustrativos, sin stock real.":p.description||"Descubre nuestra selección.";
- $("productPrice").textContent=Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar";
+ const priceBox=$("productPrice");
+ if(p.is_sale&&Number(p.compare_at_price)>Number(p.price)){
+   priceBox.replaceChildren();
+   const current=document.createElement('strong');current.textContent=money(p.price);
+   const previous=document.createElement('s');previous.textContent=money(p.compare_at_price);
+   const discount=document.createElement('span');discount.textContent='-'+Math.round((1-p.price/p.compare_at_price)*100)+'% SALE';
+   discount.className='product-sale-discount';priceBox.append(current,previous,discount);
+ }else priceBox.textContent=Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar";
  $("productStock").textContent=p.is_demo?(p.variant_group?"Pendiente de confirmar inventario":"Solo exposición · No disponible para compra"):p.stock>0?p.stock+" unidades en inventario":"Sin stock";
- $("productBadge").hidden=!p.is_demo;$("productBadge").textContent=p.variant_group?"FOTO REAL · DATOS POR CONFIRMAR":"ARTÍCULO DE MUESTRA";
+ $("productBadge").hidden=!p.is_demo;$("productBadge").hidden=!p.is_demo&&!p.is_sale;$("productBadge").textContent=p.is_sale?"SALE":p.variant_group?"FOTO REAL · DATOS POR CONFIRMAR":"ARTÍCULO DE MUESTRA";
  const img=$("productPhoto");if(/^https:\/\//.test(p.image_url||""))img.src=p.image_url;else img.style.display="none";img.alt="Fotografía del producto "+p.name;
  const page=categoryPages[p.category]||"belleza.html";$("backCategory").href="./"+page;$("backCategory").textContent=p.category;
  const size=$("productSize");for(const value of p.sizes||[]){const option=document.createElement("option");option.textContent=value;option.value=value;size.append(option);}if(!size.options.length){const option=document.createElement("option");option.textContent="Estándar";size.append(option);}
