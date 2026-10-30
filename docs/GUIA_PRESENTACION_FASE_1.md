@@ -72,3 +72,6 @@ Se considera **lista para ventas reales** solamente después de la configuració
 - Se corrigió el texto de las fichas reales: el precio y stock aparecen como datos publicados, pero el pago todavía debe habilitarse por el comercio.
 - El sistema tiene 18 referencias: 5 productos reales con 15 unidades, 13 muestras DEMO y ninguna oferta SALE.
 - Siguiente requisito obligatorio para operación: probar inicio de sesión con administrador real, fotografía e importación de inventario, y cobro manual con número autorizado; no se ingresaron credenciales durante la auditoría.
+
+## Seguridad de la Fase 2
+Auditoría de Supabase del 29/10/2026: el asesor reporta dos advertencias pendientes de revisar antes de aceptar ventas reales: `public.place_order` usa `SECURITY DEFINER` y está disponible para usuarios autenticados (uso actualmente intencional; revisar privilegios, pruebas de abuso y límites), y la protección contra contraseñas filtradas está desactivada en Supabase Auth. Ninguna de estas advertencias debe presentarse como seguridad de producción resuelta.
