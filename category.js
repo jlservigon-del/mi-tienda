@@ -2,7 +2,7 @@ import {db,configured,money} from './store-client.js';
 import {addToCart} from './shop-cart.js';
 const $=id=>document.getElementById(id);
 const path=location.pathname.split('/').pop().toLowerCase();
-const brandNames=["Tommy Hilfiger","Lacoste","Calvin Klein","Ralph Lauren","Guess","Victoria's Secret","Bath & Body Works"];
+const brandNames=["Michael Kors","Tommy Hilfiger","Lacoste","Calvin Klein","Ralph Lauren","Guess","Victoria's Secret","Bath & Body Works"];
 const groups={"hombre.html":{label:"Hombre",terms:["hombre","masculino","men"]},"mujer.html":{label:"Mujer",terms:["mujer","femenino","women"]},"accesorios.html":{label:"Accesorios",terms:["accesorios","accesorio","complementos"]},"belleza.html":{label:"Belleza y fragancias",terms:["belleza","fragancias","cuidado corporal","cuidado personal","hogar & aromas"]}};
 const brandQuery=new URLSearchParams(location.search).get('marca')||'';
 const brandMode=path==="marca.html";
@@ -13,7 +13,7 @@ document.title=label+" | Miami Store";
 $("categoryTitle").textContent=label;
 $("breadcrumbCurrent").textContent=label;
 $("resultsTitle").textContent=brandMode?"Selección "+label:"Explorar "+label;
-$("categoryDescription").textContent=brandMode?"Productos y referencias editoriales de "+label+". Los artículos de muestra no se encuentran a la venta.":"Explora, compara marcas y filtra por talla, precio y disponibilidad.";
+$("categoryDescription").textContent=brandMode?"Explora la selección de "+label+", filtra por precio y disponibilidad. Los artículos DEMO son únicamente ilustrativos.":"Explora, compara marcas y filtra por talla, precio y disponibilidad.";
 let items=[];
 const controlIds=["search","brand","size","minPrice","maxPrice","available","sort"];
 const brandOf=p=>String(p.brand||"Sin marca especificada");
@@ -24,7 +24,7 @@ function fillOptions(id,values){const select=$(id),first=select.firstElementChil
 function card(p){
  const article=document.createElement("article");article.className="item catalog-card";
  const photo=document.createElement("div");photo.className="pic";
- if(safeImg(p.image_url)){const img=document.createElement("img");img.src=p.image_url;img.alt="Imagen editorial de referencia del artículo "+p.name;img.loading="lazy";photo.append(img);}
+ if(safeImg(p.image_url)){const img=document.createElement("img");img.src=p.image_url;img.alt="Fotografía del producto "+p.name;img.loading="lazy";img.decoding="async";photo.append(img);}
  else photo.append(text("span","Fotografía próximamente","image-placeholder"));
  if(p.is_demo)photo.append(text("span",p.variant_group?"FOTO REAL · PENDIENTE":"MUESTRA / DEMO","demo-ribbon"));
  const info=document.createElement("div");info.className="info";
