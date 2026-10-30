@@ -1,5 +1,5 @@
 import {db,configured,currentUser,errorText} from './store-client.js';
-const $=id=>document.getElementById(id);const form=$('authForm');const mode=form.elements.mode;
+const $=id=>document.getElementById(id);const form=$('authForm');const mode=form.elements.mode;let passwordRecovery=false;
 function changeMode(){const registering=mode.value==='register';$('registerFields').hidden=!registering;for(const id of ['regFirst','regLast','regDni','regPhone','regAddress','regDistrict','privacyConsent'])$(id).required=registering;form.elements.password.autocomplete=registering?'new-password':'current-password';}
 mode.addEventListener('change',changeMode);changeMode();
 function profileFromRegister(){const first=$('regFirst').value.trim(),last=$('regLast').value.trim(),dni=$('regDni').value.trim(),phone=$('regPhone').value.trim(),address=$('regAddress').value.trim(),district=$('regDistrict').value.trim(),reference=$('regReference').value.trim();if(!/^[0-9]{8}$/.test(dni))throw Error('El DNI debe tener 8 dígitos.');if(!first||!last||!phone||!address||!district)throw Error('Completa todos los datos obligatorios.');return {first_name:first,last_name:last,full_name:first+' '+last,dni,phone,address,district,reference};}
@@ -11,6 +11,7 @@ async function isStoreAdministrator(user){
  return Boolean(data);
 }
 async function refresh(){
+ if(passwordRecovery)return;
  const user=await currentUser();
  $('session').textContent=user?'Sesión iniciada: '+user.email:'No has iniciado sesión';
  $('logout').hidden=!user;
@@ -50,3 +51,29 @@ form.addEventListener('submit',async e=>{e.preventDefault();if(!db)return;const 
 $('profileForm').addEventListener('submit',async e=>{e.preventDefault();const user=await currentUser();if(!user)return;const name=$('fullName').value.trim(),dni=$('dni').value.trim();if(dni&&!/^[0-9]{8}$/.test(dni)){$('status').textContent='DNI inválido: ingresa 8 dígitos.';return;}const parts=name.split(/\s+/);const payload={full_name:name,first_name:parts[0]||'',last_name:parts.slice(1).join(' '),dni:dni||null,phone:$('phone').value.trim(),address:$('address').value.trim(),district:$('district').value.trim(),reference:$('reference').value.trim()};const {error}=await saveProfile(user,payload);$('status').textContent=error?errorText(error):'Datos del cliente actualizados.';});
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();await refresh();});refresh();
 $('adminRoleLogout').addEventListener('click',async()=>{const {error}=await db.auth.signOut();if(error){$('status').textContent=errorText(error);return;}location.replace('./admin-acceso.html');});
+
+if(db){
+ db.auth.onAuthStateChange((event)=>{
+   if(event!=='PASSWORD_RECOVERY')return;
+   passwordRecovery=true;
+   $('adminRolePanel').hidden=true;
+   $('customerAccountGrid').hidden=true;
+   $('ordersSection').hidden=true;
+   $('passwordRecoverySection').hidden=false;
+   $('status').textContent='Enlace de recuperación confirmado. Introduce tu nueva contraseña.';
+ });
+}
+$('passwordRecoveryForm').addEventListener('submit',async(e)=>{
+ e.preventDefault();if(!db)return;
+ const form=e.currentTarget;
+ const pwd=form.elements.password.value;
+ if(pwd!==form.elements.confirm.value){$('passwordRecoveryStatus').textContent='Las contraseñas no coinciden.';return;}
+ if(pwd.length<12){$('passwordRecoveryStatus').textContent='Utiliza al menos 12 caracteres.';return;}
+ const btn=form.querySelector('button[type=submit]');btn.disabled=true;
+ const {error}=await db.auth.updateUser({password:pwd});
+ if(error){$('passwordRecoveryStatus').textContent=errorText(error);btn.disabled=false;return;}
+ form.reset();
+ $('passwordRecoveryStatus').textContent='Contraseña actualizada. Vuelve a iniciar sesión de forma segura.';
+ await db.auth.signOut();
+ location.replace('./admin-acceso.html');
+});
