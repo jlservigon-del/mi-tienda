@@ -71,12 +71,16 @@ function fromCSV(row){
  const p=uploaded.get(sku)||{};
  photo=p[1]||photo;second=p[2]||second;third=p[3]||third;
  const old=existing.get(sku);
+ const saleRow=Object.prototype.hasOwnProperty.call(row,'sale')&&row.sale!=='';
+ const isSale=saleRow?yn(row.sale,'sale',i):Boolean(old?.is_sale);
+ const previous=Object.prototype.hasOwnProperty.call(row,'precio_anterior_soles')&&row.precio_anterior_soles!==''?price(row.precio_anterior_soles,i):old?.compare_at_price??null;
+ if(isSale&&(demo||previous===null||Number(previous)<=amount||amount<=0))throw Error('Fila '+i+': SALE necesita producto real, precio anterior superior al actual y descuento aprobado.');
  photo=photo||old?.image_url||'';
  const gallery=[photo,second,third].filter(Boolean);
  if(published&&!photo)throw Error('Fila '+i+': antes de publicar, añade una fotografía principal.');
  return {sku,name:row.nombre,brand:row.marca,category:row.categoria,color:row.color||'',sizes:row.talla?[row.talla]:[],variant_group:row.grupo_variantes||'',price:amount,stock:demo?0:units,
    image_url:photo,gallery_urls:gallery.length?gallery:old?.gallery_urls||[],
-   description:row.descripcion||'',active:published,is_demo:demo};
+   description:row.descripcion||'',active:published,is_demo:demo,is_sale:isSale,compare_at_price:isSale?Number(previous):null};
 }
 async function authorized(){
  if(!configured||!db){message.textContent='No hay conexión con Supabase.';return false;}
@@ -101,7 +105,7 @@ form?.addEventListener('submit',async e=>{
   if(rows.length>100)throw Error('Por seguridad, importa un máximo de 100 SKUs por lote.');
   const unique=rows.map(r=>r.sku.toUpperCase());
   if(new Set(unique).size!==unique.length)throw Error('Hay SKU duplicados dentro del Excel.');
-  const {data,error}=await db.from('products').select('sku,image_url,gallery_urls').in('sku',unique);
+  const {data,error}=await db.from('products').select('sku,image_url,gallery_urls,is_sale,compare_at_price').in('sku',unique);
   if(error)throw error;
   existing=new Map((data||[]).map(p=>[p.sku,p]));
   parsed=rows.map(fromCSV);
