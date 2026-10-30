@@ -32,8 +32,8 @@ export async function initShopHeader(){
  if(!document.querySelector('.mobile-category-nav')){
    const header=document.querySelector('.header');
    if(header){const nav=document.createElement('nav');nav.className='mobile-category-nav';nav.setAttribute('aria-label','Colecciones');
-     for(const [label,href] of [['Inicio','./index.html'],['Hombre','./hombre.html'],['Mujer','./mujer.html'],['Accesorios','./accesorios.html'],['Belleza','./belleza.html']]){
-       const a=document.createElement('a');a.textContent=label;a.href=href;nav.append(a);
+     for(const [label,href] of [['Inicio','./index.html'],['New Arrivals','./index.html#novedades'],['Hombre','./hombre.html'],['Mujer','./mujer.html'],['Accesorios','./accesorios.html'],['Belleza','./belleza.html'],['SALE','./sale.html']]){
+       const a=document.createElement('a');a.textContent=label;a.href=href;if(label==='SALE')a.className='site-sale-link';nav.append(a);
      }
      header.after(nav);
    }
