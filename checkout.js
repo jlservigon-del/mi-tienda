@@ -5,14 +5,28 @@ const $=id=>document.getElementById(id);
 const config=window.STORE_CONFIG||{};
 const KEY='miami_cart_v1';
 let cart={};try{cart=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch{}
-let user=null,products=[],selected=null,orderId=null;let methods=[];
+let user=null,sessionUser=null,shippingReady=false,products=[],selected=null,orderId=null;let methods=[];
 const options=[['yape','Yape'],['plin','Plin'],['transferencia','Transferencia bancaria']];
 function msg(s){$('checkoutStatus').textContent=s;}
 function configuredMethods(){return options.filter(([key])=>methods.some(m=>m.method===key&&m.enabled&&m.verified_by_owner));}
 function payInfo(key){return methods.find(m=>m.method===key&&m.enabled&&m.verified_by_owner)||null;}
 function renderPayments(){
  const root=$('paymentChoices');root.replaceChildren();
- for(const [key,label] of options){const enabled=Boolean(payInfo(key));const wrap=document.createElement('label');wrap.className='payment-option'+(enabled?'':' off');const radio=document.createElement('input');radio.type='radio';radio.name='pay';radio.value=key;radio.disabled=!enabled;radio.checked=selected===key;radio.onchange=()=>{selected=key;renderDetails();updateSubmit();};const name=document.createElement('strong');name.textContent=label;const status=document.createElement('small');status.textContent=enabled?'Disponible':'Próximamente';wrap.append(radio,name,status);root.append(wrap);}
+ for(const [key,label] of options){
+ const enabled=Boolean(payInfo(key));
+ const wrap=document.createElement('label');wrap.className='payment-option'+(enabled?'':' off');
+ const radio=document.createElement('input');radio.type='radio';radio.name='pay';radio.value=key;radio.disabled=!enabled;radio.checked=selected===key;
+ radio.onchange=()=>{selected=key;renderDetails();updateSubmit();};
+ const symbol=document.createElement('span');symbol.className='payment-demo-icon';symbol.textContent=key==='transferencia'?'B':key==='yape'?'Y':'P';symbol.setAttribute('aria-hidden','true');
+ const name=document.createElement('strong');name.textContent=label;
+ const status=document.createElement('small');status.textContent=enabled?'HABILITADO':'DEMO · INACTIVO';
+ wrap.append(radio,symbol,name,status);root.append(wrap);
+ }
+ const card=document.createElement('div');card.className='payment-option off';
+ const ico=document.createElement('span');ico.className='payment-demo-icon';ico.textContent='T';ico.setAttribute('aria-hidden','true');
+ const name=document.createElement('strong');name.textContent='Tarjeta de débito o crédito';
+ const small=document.createElement('small');small.textContent='PRÓXIMA FASE';
+ card.append(ico,name,small);root.append(card);
  if(!selected&&configuredMethods().length){selected=configuredMethods()[0][0];renderPayments();return;}
  renderDetails();updateSubmit();
 }
@@ -23,12 +37,51 @@ function renderDetails(){
  for(const [label,value] of fields){if(!value)continue;const p=document.createElement('p');p.textContent=label+': '+value;root.append(p);}
  if(info.qr_url&&/^https:\/\//.test(info.qr_url)){const img=document.createElement('img');img.src=info.qr_url;img.alt='QR de pago de Miami Store';root.append(img);}
 }
-function updateSubmit(){const hasItems=products.length>0;const pay=payInfo(selected);const detailComplete=!!pay&&(selected==='transferencia'?!!(pay.holder&&pay.account&&pay.bank):!!(pay.holder&&pay.phone));$('submitOrder').disabled=!user||!hasItems||!detailComplete||!!orderId;}
+function updateSubmit(){const hasItems=products.length>0;const pay=payInfo(selected);const detailComplete=!!pay&&(selected==='transferencia'?!!(pay.holder&&pay.account&&pay.bank):!!(pay.holder&&pay.phone));$('submitOrder').disabled=!user||!shippingReady||!hasItems||!detailComplete||!!orderId;}
+const shippingForm=$('shippingForm');
+function readShippingProfile(profile){
+ const fields=['full_name','phone','department','province','district','postal_code','address','reference','delivery_instructions'];
+ for(const key of fields)shippingForm.elements[key].value=profile?.[key]||'';
+ shippingReady=Boolean(profile?.full_name?.trim()&&profile?.phone?.trim()&&profile?.address?.trim()&&profile?.department?.trim()&&profile?.province?.trim()&&profile?.district?.trim());
+ $('shippingSessionStatus').textContent=shippingReady?'Dirección registrada. Puedes revisarla o actualizarla antes de comprar.':'Completa y guarda los datos de entrega de tu cuenta antes de realizar pedidos.';
+ user=shippingReady?sessionUser:null;
+}
+shippingForm?.addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(!db||!sessionUser){$('shippingSaveStatus').textContent='Inicia sesión para guardar la dirección.';return;}
+ const data={};
+ for(const key of ['full_name','phone','department','province','district','postal_code','address','reference','delivery_instructions']){
+  data[key]=String(shippingForm.elements[key].value||'').trim();
+ }
+ if(data.full_name.length<2||data.phone.length<6||data.address.length<5||!data.department||!data.province||!data.district){
+  $('shippingSaveStatus').textContent='Completa el nombre, celular, departamento, provincia, distrito y dirección.';return;
+ }
+ const button=shippingForm.querySelector('button[type=submit]');button.disabled=true;
+ $('shippingSaveStatus').textContent='Guardando dirección en tu perfil privado...';
+ const {error}=await db.from('customer_profiles').upsert({user_id:sessionUser.id,...data},{onConflict:'user_id'});
+ if(error){$('shippingSaveStatus').textContent='No se pudo guardar: '+error.message;button.disabled=false;return;}
+ readShippingProfile(data);
+ $('checkoutSession').textContent='Datos de entrega completos: '+data.full_name;
+ $('shippingSaveStatus').textContent='Dirección guardada. Se utilizará al confirmar un pedido habilitado.';
+ button.disabled=false;updateSubmit();
+});
 async function init(){
  if(!configured||!db){msg('Servicio de compra no configurado.');return;}
- user=await currentUser();
- if(!user){$('checkoutSession').textContent='Debes iniciar sesión para registrar un pedido. Visita Mi cuenta.';msg('Identifícate desde la opción Mi cuenta.');}
- else {$('checkoutSession').textContent='Sesión iniciada. Comprobaremos que tu perfil de entrega esté completo.';const {data}=await db.from('customer_profiles').select('full_name,phone,address,dni').eq('user_id',user.id).maybeSingle();if(!data?.full_name||!data.phone||!data.address){msg('Completa primero tus datos personales y dirección en Mi cuenta.');user=null;}else{$('checkoutSession').textContent='Cliente: '+data.full_name;}}
+ sessionUser=await currentUser();
+ if(!sessionUser){
+   $('shippingForm').hidden=true;
+   $('shippingSessionStatus').textContent='Accede a Mi cuenta para registrar la dirección de entrega.';
+   $('checkoutSession').textContent='Debes iniciar sesión para realizar un pedido. Visita Mi cuenta.';
+   msg('Identifícate desde la opción Mi cuenta.');
+ }else{
+   shippingForm.hidden=false;
+   const {data,error}=await db.from('customer_profiles').select('full_name,phone,address,dni,district,department,province,postal_code,reference,delivery_instructions').eq('user_id',sessionUser.id).maybeSingle();
+   if(error){msg('No se pudieron cargar tus datos de entrega: '+error.message);}
+   else{
+     readShippingProfile(data);
+     $('checkoutSession').textContent=shippingReady?'Cliente: '+data.full_name:'Guarda primero los datos completos de entrega.';
+   }
+ }
  const ids=Object.keys(cart).filter(x=>/^[0-9a-f-]{36}$/i.test(x));
  if(!ids.length){$('summaryLines').textContent='Tu carrito está vacío.';renderPayments();return;}
  const {data,error}=await db.from('products').select('id,name,price,stock,active,is_demo').in('id',ids);
