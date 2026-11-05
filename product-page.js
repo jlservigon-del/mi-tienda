@@ -8,7 +8,7 @@ async function load(){
  if(!configured||!db||!/^[a-f0-9-]{36}$/i.test(id||"")){$("productTitle").textContent="Producto no encontrado";return;}
  const {data:p,error}=await db.from("products").select("*").eq("id",id).eq("active",true).maybeSingle();
  if(error||!p){$("productTitle").textContent="Producto no disponible";return;}
- document.title=p.name+" | Miami Store";
+ document.title=p.name+" | Miami Store";const productPicture=document.querySelector('.product-image-box');if(productPicture){productPicture.dataset.productId=p.id;document.dispatchEvent(new Event('miami:product-ready'));}
  $("productBrand").textContent=p.brand||"Miami Store";$("productTitle").textContent=p.name;
  $("productDescription").textContent=p.is_demo?"Producto ilustrativo no disponible para compra. La imagen procede de fotografía gratuita referencial y no representa necesariamente el artículo de la marca.":p.description||"Descubre nuestra selección.";
  const priceBox=$("productPrice");
