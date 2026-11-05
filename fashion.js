@@ -16,7 +16,7 @@ function item(p){
  if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt=(p.is_demo?"Imagen editorial ilustrativa de ":"Fotografía del producto ")+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
  else photo.append(node("span","Fotografía por agregar","image-placeholder"));
  if(p.is_sale)photo.append(node("span","SALE","sale-ribbon"));
- else if(p.is_demo)photo.append(node("span",p.variant_group?"FOTO REAL":"DEMO","demo-ribbon"));
+ else if(p.is_demo)photo.append(node("span","IMAGEN REFERENCIAL","demo-ribbon"));
  else if(newestIds.has(p.id))photo.append(node("span","NEW ARRIVAL","demo-ribbon"));
  const info=node("div",undefined,"info");info.append(node("p",p.brand||p.category,"brand-label"),node("h3",p.name));
  if(p.is_sale&&Number(p.compare_at_price)>Number(p.price)){
