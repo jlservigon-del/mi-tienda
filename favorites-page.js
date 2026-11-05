@@ -27,6 +27,13 @@ function card(p){
  c.append(el('p',p.is_demo?'Precio referencial: '+money(p.price):money(p.price),'favorite-price'));
  if(p.is_demo)c.append(el('p','Artículo de muestra, no disponible para compra','favorite-demo'));
  else if(p.stock<=0)c.append(el('p','Sin stock','favorite-demo'));
+ const remove=el('button','Quitar de favoritos','favorite-remove');remove.type='button';
+ remove.addEventListener('click',()=>{
+  const remaining=getFavoriteIds().filter(id=>id!==p.id);
+  try{localStorage.setItem('miami-store-favorites-v1',JSON.stringify(remaining));}catch{return;}
+  document.dispatchEvent(new CustomEvent('miami:favorites-changed',{detail:{ids:remaining}}));
+ });
+ c.append(remove);
  const a=el('a','VER PRODUCTO','favorite-view');a.href='./producto.html?id='+encodeURIComponent(p.id);c.append(a);
  return c;
 }
