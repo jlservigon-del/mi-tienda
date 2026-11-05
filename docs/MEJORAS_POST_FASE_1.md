@@ -18,8 +18,8 @@ Se revisaron tres tiendas peruanas del sector, exclusivamente para estudiar patr
 ## Archivos
 - `legal-navigation.js`, `legal-pages.css`: Libro de Reclamaciones exclusivamente como texto en el footer.
 - `category.js` y `hombre.html`, `mujer.html`, `accesorios.html`, `belleza.html`, `marca.html`, `sale.html`: selector por color y filtro de catálogo.
-- `wishlist.js`, `wishlist.css`: favoritos locales y controles en la web.
-- `favoritos.html`, `favorites-page.js`: vista de favoritos.
+- `legal-navigation.js`, `wishlist.css`: navegación, botones visibles Guardar/Guardado, contador y gestión de favoritos locales.
+- `favoritos.html`, `favorites-page.js`: vista de favoritos y acción de quitar productos.
 - `fashion.js`, `product-page.js`: integración del botón de corazón en catálogo y fichas.
 
 ## Antes del lanzamiento comercial
@@ -28,3 +28,10 @@ Se revisaron tres tiendas peruanas del sector, exclusivamente para estudiar patr
 - Probar el registro y la respuesta al reclamo completo, así como la compra autenticada, pagos y despachos antes de apertura.
 - Mantener las ofertas SALE desactivadas hasta autorizar descuentos y precios anteriores verificables.
 - Validar de forma periódica la experiencia en dispositivos móviles y la accesibilidad.
+
+## QA final verificado en navegador (sin credenciales)
+- Accesorios: filtro de color **Rosa** deja solo el bolso Michael Kors rosa de S/349; al limpiar vuelve a mostrar las cinco referencias reales.
+- Accesorios: botón **Guardar** visible junto a la ficha del bolso Tommy Hilfiger marrón S/249; al pulsarlo cambia a **Guardado** y el contador de la cabecera muestra 1.
+- Favoritos: el mismo bolso aparece correctamente con su precio; **Quitar de favoritos** actualiza la lista a cero y muestra el estado vacío.
+- Libro de Reclamaciones: no existe botón flotante ni fijo; enlace de texto en **PROTECCIÓN AL CONSUMIDOR** en el footer y ruta correcta.
+- No se generaron pedidos, cuentas o reclamaciones; no se modificaron precios, stock, promociones ni métodos de pago.
