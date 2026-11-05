@@ -25,6 +25,7 @@ function item(p){
   info.append(prices);
  }else info.append(node("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar","price"+(p.is_demo?" product-price-reference":"")));
  const link=node("a","Ver producto","catalog-detail");link.href="./producto.html?id="+encodeURIComponent(p.id);info.append(link);
+ const wish=node("button",undefined,"favorite-inline");wish.type="button";wish.dataset.favoriteId=p.id;wish.setAttribute('aria-pressed','false');wish.innerHTML="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20.2 4.8a5.1 5.1 0 0 0-7.2 0L12 5.9l-1.1-1.1a5.1 5.1 0 0 0-7.2 7.2L12 20.3l8.2-8.3a5.1 5.1 0 0 0 0-7.2Z\"/></svg><span>Guardar</span>";info.append(wish);
  const btn=node("button",p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado","category-add");
  btn.disabled=Boolean(p.is_demo)||!(p.stock>0);
  btn.onclick=()=>addToCart(p);info.append(btn);card.append(photo,info);return card;
