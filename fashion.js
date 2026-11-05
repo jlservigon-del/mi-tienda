@@ -11,7 +11,7 @@ const grid=document.getElementById("catalog"),status=document.getElementById("ca
 let products=[],tab="Todas";let newestIds=new Set();
 function node(tag,content,cls){const e=document.createElement(tag);if(content!==undefined)e.textContent=content;if(cls)e.className=cls;return e;}
 function item(p){
- const card=node("article",undefined,"item catalog-card");
+ const card=node("article",undefined,"item catalog-card");card.dataset.productId=p.id;
  const photo=node("div",undefined,"pic");
  if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt=(p.is_demo?"Imagen editorial ilustrativa de ":"Fotografía del producto ")+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
  else photo.append(node("span","Fotografía por agregar","image-placeholder"));
