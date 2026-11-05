@@ -1,5 +1,10 @@
 import {db,configured,money} from './store-client.js';
-import {getFavoriteIds} from './wishlist.js';
+function getFavoriteIds(){
+ try{
+  const ids=JSON.parse(localStorage.getItem('miami-store-favorites-v1')||'[]');
+  return Array.isArray(ids)?[...new Set(ids.filter(id=>typeof id==='string'&&/^[0-9a-f-]{36}$/i.test(id)))].slice(0,100):[];
+ }catch{return [];}
+}
 const grid=document.getElementById('favoritesGrid');
 const empty=document.getElementById('favoritesEmpty');
 const status=document.getElementById('favoritesStatus');
