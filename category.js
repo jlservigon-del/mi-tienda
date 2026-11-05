@@ -37,6 +37,7 @@ function card(p){
  info.append(row);
  }else info.append(text("div",Number(p.price)>0?money(p.price)+(p.is_demo?" · referencial":""):"Precio por confirmar","price"));
  const detail=document.createElement("a");detail.href="./producto.html?id="+encodeURIComponent(p.id);detail.className="catalog-detail";detail.textContent="Ver detalles";info.append(detail);
+ const wish=document.createElement('button');wish.type='button';wish.className='favorite-inline';wish.dataset.favoriteId=p.id;wish.setAttribute('aria-pressed','false');wish.innerHTML="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20.2 4.8a5.1 5.1 0 0 0-7.2 0L12 5.9l-1.1-1.1a5.1 5.1 0 0 0-7.2 7.2L12 20.3l8.2-8.3a5.1 5.1 0 0 0 0-7.2Z\"/></svg><span>Guardar</span>";info.append(wish);
  const add=document.createElement("button");add.className="category-add";
  add.disabled=Boolean(p.is_demo)||!(p.stock>0);
  add.textContent=p.is_demo?(p.variant_group?"Consultar disponibilidad":"Solo demostración"):p.stock>0?"Agregar al carrito":"Agotado";
