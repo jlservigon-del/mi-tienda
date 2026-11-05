@@ -3,7 +3,7 @@
  if(!document.querySelector('link[href*="legal-pages.css"]')){const css=document.createElement('link');css.rel='stylesheet';css.href='./legal-pages.css?v=2';document.head.append(css);}
  if(page==='admin.html'||page==='admin-acceso.html')return;
  if(!document.querySelector('link[href*="wishlist.css"]')){
-  const style=document.createElement('link');style.rel='stylesheet';style.href='./wishlist.css?v=1';document.head.append(style);
+  const style=document.createElement('link');style.rel='stylesheet';style.href='./wishlist.css?v=2';document.head.append(style);
  }
 
  const links=[
@@ -103,5 +103,6 @@
  }
  document.addEventListener('miami:product-ready',requestScan);
  window.addEventListener('storage',event=>{if(event.key===FKEY)syncFavorites();});
+ document.addEventListener('miami:favorites-changed',syncFavorites);
 
 })();
