@@ -16,7 +16,12 @@
    const a=document.createElement('a');a.href='./'+path;a.textContent=label;col.append(a);
   }
   const p=document.createElement('p');p.className='legal-footer-identity';
-  p.textContent='Información empresarial disponible cuando el titular verifique sus datos.';col.append(p);
+  p.textContent='Identificación empresarial por verificar antes de vender.';col.append(p);
+  import('./legal-provider.js').then(m=>m.getVerifiedProvider()).then(provider=>{
+    if(!provider)return;
+    p.textContent=provider.legal_name+' · RUC '+provider.ruc+' · '+provider.fiscal_address+' · '+provider.service_email;
+  }).catch(()=>{});
+
   footer.append(col);
  }
  const subnav=document.querySelector('.site-subnav');
