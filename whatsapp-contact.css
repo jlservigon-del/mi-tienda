@@ -5,3 +5,5 @@
 .whatsapp-contact [hidden],.footer-whatsapp[hidden]{display:none!important}
 .footer-whatsapp-wrap a{display:inline-block;font-weight:700;font-size:13px;text-decoration:underline;text-underline-offset:4px}
 @media(max-width:650px){.whatsapp-contact{right:12px;bottom:13px}.whatsapp-contact-link{padding:13px}.whatsapp-contact-link span{display:none}.whatsapp-contact-disabled{font-size:10px;padding:9px 10px;max-width:150px;text-align:center}}
+
+.whatsapp-contact[hidden]{display:none!important}
