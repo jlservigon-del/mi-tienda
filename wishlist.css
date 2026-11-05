@@ -1,0 +1,36 @@
+
+/* Miami Store — favoritos, estilos editoriales y responsive */
+.favorite-header-link{display:inline-flex;align-items:center;gap:5px;position:relative;text-decoration:none;color:#202020;white-space:nowrap;font-size:10px;letter-spacing:1px;font-weight:700}
+.favorite-header-link>svg{width:21px;height:21px}
+.favorite-header-link:hover{color:#836957}
+.favorite-count{position:absolute;top:-8px;left:13px;display:grid;place-items:center;min-width:15px;height:15px;background:#191919;color:#fff;border-radius:50%;font-size:9px;line-height:1;padding:0 3px}
+.favorite-count[hidden]{display:none!important}
+.favorite-toggle{position:absolute;right:12px;top:12px;z-index:5;display:grid;place-items:center;width:37px;height:37px;border:1px solid #e4e0dc;border-radius:50%;background:#fffffff2;color:#242424;box-shadow:0 2px 5px #0001;cursor:pointer;padding:7px;transition:background .17s,border-color .17s}
+.favorite-toggle svg{width:21px;height:21px;pointer-events:none}
+.favorite-toggle:hover,.favorite-toggle:focus-visible{background:#f6f0eb;border-color:#b8aa9d}
+.favorite-toggle.is-favorite{color:#a04348;background:#fff8f7;border-color:#efcece}
+.favorite-toggle.is-favorite svg{fill:#a04348}
+.catalog-card .pic,.product-image-box,.favorite-image{position:relative}
+.catalog-color-note{margin:2px 0 4px!important;font-size:11px!important;line-height:1.5!important;color:#777!important}
+.favorite-page{max-width:1250px;margin:0 auto;padding:40px 22px 90px}
+.favorite-page .favorite-intro{text-align:center;max-width:630px;margin:0 auto 32px}
+.favorite-kicker{font-size:10px;font-weight:700;letter-spacing:2.3px;color:#777}
+.favorite-page h1{font:400 clamp(45px,5vw,70px) 'Libre Caslon Display',Georgia,serif;letter-spacing:-.5px;margin:14px 0}
+.favorite-page .favorite-description{font-size:13px;line-height:1.8;color:#6d6d6d}
+.favorite-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.favorite-card{min-width:0}
+.favorite-image{height:315px;background:#f7f7f7;display:grid;place-items:center;overflow:hidden}
+.favorite-image img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.favorite-card .favorite-brand{font-size:10px;letter-spacing:1.1px;color:#666;text-transform:uppercase;margin:13px 0 8px}
+.favorite-card h2{font:500 14px/1.5 'DM Sans',sans-serif;min-height:40px;margin:0 0 7px}
+.favorite-card .favorite-price{font-size:15px;font-weight:700}
+.favorite-card .favorite-demo{color:#888;font-size:11px}
+.favorite-card .favorite-view{display:block;border:1px solid #242424;color:#242424;margin:15px 0 0;text-align:center;padding:12px;font-size:10px;font-weight:700;letter-spacing:1px}
+.favorite-card .favorite-view:hover{background:#232323;color:#fff}
+.favorite-empty{text-align:center;max-width:450px;margin:55px auto;background:#faf9f7;padding:40px 25px}
+.favorite-empty h2{font:400 33px 'Libre Caslon Display',Georgia,serif;margin:10px}
+.favorite-empty p{color:#666;font-size:13px;line-height:1.8}
+.favorite-empty a{display:inline-block;margin-top:15px;padding:13px 22px;background:#222;color:#fff;font-size:11px;font-weight:700}
+@media(max-width:1050px){.favorite-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.favorite-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.favorite-image{height:230px}.favorite-header-link .favorite-header-label{display:none}.favorite-header-link>svg{width:22px;height:22px}.favorite-toggle{right:9px;top:9px;width:34px;height:34px}.favorite-page{padding:35px 16px 65px}}
+@media(max-width:420px){.favorite-image{height:195px}.favorite-page h1{font-size:46px}}
