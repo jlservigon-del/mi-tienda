@@ -1,0 +1,52 @@
+/* Miami Store Peru / legal pages */
+.legal-main{min-height:500px;background:#fff;color:#232323}
+.legal-hero{background:#f5f3f0;padding:70px 22px 60px;text-align:center}
+.legal-eyebrow{display:block;font-size:10px;letter-spacing:2.4px;color:#777;font-weight:700}
+.legal-hero h1{font:400 clamp(42px,5.8vw,75px)/1.12 'Libre Caslon Display',Georgia,serif;margin:19px 0;color:#222}
+.legal-hero p{max-width:620px;margin:0 auto;color:#666;font-size:14px;line-height:1.85}
+.legal-content{max-width:1050px;margin:0 auto;padding:46px 24px 75px}
+.legal-provider{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 26px;padding:27px;border:1px solid #e4e2df;background:#fff}
+.legal-provider h2{grid-column:1/-1;font:400 29px 'Libre Caslon Display',Georgia,serif;margin:0 0 13px}
+.legal-provider p{font-size:12px;color:#595959;line-height:1.65;margin:0}
+.legal-provider strong{color:#282828}
+.legal-notice{margin:25px 0;border-left:2px solid #84807a;padding:17px 20px;background:#f7f6f4}
+.legal-notice strong,.legal-unconfigured strong{font-size:12px}
+.legal-notice p,.legal-unconfigured,.legal-note{font-size:12px;line-height:1.85;color:#666}
+.legal-unconfigured{background:#f8f0e6;padding:18px 20px;margin:21px 0;border:1px solid #ead9c2}
+.legal-unconfigured[hidden],.complaint-form[hidden],.complaint-receipt[hidden],#guardianFields[hidden]{display:none!important}
+.complaint-form section{padding:29px 0 33px;border-bottom:1px solid #e2e1df;display:grid;gap:20px}
+.complaint-form h2,.complaint-receipt h2{font:400 36px 'Libre Caslon Display',Georgia,serif;margin:0}
+.legal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.complaint-form label:not(.legal-check){display:grid;gap:8px;font-size:11px;font-weight:700;letter-spacing:.3px;color:#4b4b4b}
+.complaint-form input:not([type=checkbox]):not([type=radio]),.complaint-form textarea,.complaint-form select{width:100%;min-width:0;border:1px solid #dadada;padding:13px 14px;font:400 13px/1.6 'DM Sans',Arial,sans-serif;background:#fff;color:#222;border-radius:0}
+.complaint-form textarea{resize:vertical}
+.complaint-form fieldset{border:1px solid #e5e5e5;padding:17px;display:grid;gap:12px}
+.complaint-form legend{padding:0 8px;font-size:12px;font-weight:700;color:#333}
+.legal-check{display:flex;align-items:start;gap:11px;font-size:12px!important;font-weight:400!important;letter-spacing:0!important;line-height:1.65;color:#555}
+.legal-check input{margin-top:4px;accent-color:#212121}
+.legal-check a,.legal-prose a,.legal-note a{text-decoration:underline;text-underline-offset:3px}
+.legal-privacy-check{background:#f8f8f8;padding:14px}
+.legal-honeypot{position:absolute!important;left:-99999px!important;top:-99999px!important}
+.legal-submit,.legal-outline{display:inline-block;border:1px solid #222;background:#222;color:#fff;padding:15px 21px;font-size:11px;letter-spacing:1.3px;font-weight:700;cursor:pointer}
+.legal-submit:disabled{opacity:.5;cursor:wait}
+.legal-outline{background:#fff;color:#222;margin-left:9px}
+#complaintStatus{font-size:13px;line-height:1.7;color:#654b29}
+.complaint-receipt{padding:29px;border:2px solid #353535;margin-top:35px;background:#fff}
+.complaint-receipt h2{margin:12px 0}
+.complaint-receipt>p{font-size:12px;color:#6a6a6a;line-height:1.7}
+#receiptBody{font-size:13px;line-height:1.75;padding:13px 0 24px}
+#receiptBody dl{display:grid;grid-template-columns:200px 1fr;gap:9px 15px}
+#receiptBody dt{font-weight:700;color:#555}#receiptBody dd{margin:0;overflow-wrap:anywhere}
+.legal-note{margin-top:40px}
+.legal-prose{max-width:880px}
+.legal-prose h2{font:400 32px 'Libre Caslon Display',Georgia,serif;margin:31px 0 8px;border-bottom:1px solid #ddd;padding-bottom:8px}
+.legal-prose p{font-size:14px;line-height:1.95;color:#606060}
+.legal-book-fixed{position:fixed;bottom:22px;left:17px;z-index:67;background:#fff;color:#272727;border:1px solid #a9a9a9;display:flex;align-items:center;gap:9px;padding:10px 13px;box-shadow:0 5px 17px #0002;font-size:10px;font-weight:700;letter-spacing:.7px;text-decoration:none}
+.legal-book-fixed svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5}
+.legal-book-fixed:hover{background:#f5f5f5}
+.legal-footer-col{display:grid;gap:6px;align-content:start}
+.legal-footer-col b{font-size:10px;color:#fff;letter-spacing:1.5px}
+.legal-footer-col a{font-size:12px;color:#c7c7c7;line-height:1.8}
+.legal-footer-identity{font-size:11px;color:#aaa;line-height:1.6;margin-top:10px}
+@media(max-width:730px){.legal-hero{padding:47px 20px}.legal-content{padding:29px 17px 55px}.legal-provider,.legal-grid{grid-template-columns:1fr}.complaint-form h2{font-size:31px}.complaint-receipt{padding:18px}#receiptBody dl{grid-template-columns:1fr;gap:2px}.legal-book-fixed{left:9px;bottom:13px;padding:9px}.legal-book-fixed span{max-width:94px;font-size:9px}}
+@media print{.header,.site-subnav,.announcement,.site-drawer,.site-drawer-overlay,.legal-hero,.legal-provider,.legal-notice,.legal-unconfigured,.complaint-form,.legal-note,footer,.legal-book-fixed,.whatsapp-contact,.complaint-receipt button{display:none!important}body{background:#fff}.legal-content{max-width:none;padding:0}.complaint-receipt{display:block!important;border:1px solid #222;margin:0}#receiptBody dl{grid-template-columns:180px 1fr}}
