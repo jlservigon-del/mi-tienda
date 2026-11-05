@@ -44,6 +44,12 @@
    b.setAttribute('aria-label',on?'Eliminar de favoritos':'Guardar en favoritos');
    b.title=on?'Eliminar de favoritos':'Guardar en favoritos';
   }
+  for(const b of document.querySelectorAll('.favorite-inline[data-favorite-id]')){
+   const active=list.includes(b.dataset.favoriteId);
+   b.classList.toggle('is-favorite',active);
+   b.setAttribute('aria-pressed',String(active));
+   const label=b.querySelector('span');if(label)label.textContent=active?'Guardado':'Guardar';
+  }
   for(const n of document.querySelectorAll('[data-favorites-count]')){n.textContent=String(list.length);n.hidden=list.length===0;}
  }
  function toggleFavorite(id){
@@ -52,6 +58,12 @@
   syncFavorites();
   document.dispatchEvent(new CustomEvent('miami:favorites-changed',{detail:{ids:next}}));
  }
+ document.addEventListener('click',event=>{
+  const button=event.target.closest('button.favorite-inline[data-favorite-id]');
+  if(!button)return;
+  event.preventDefault();event.stopPropagation();
+  toggleFavorite(button.dataset.favoriteId);
+ });
  const actions=document.querySelector('.header .head-actions');
  if(actions&&!actions.querySelector('.favorite-header-link')){
   const link=document.createElement('a');link.className='favorite-header-link';link.href='./favoritos.html';
@@ -67,7 +79,7 @@
   const a=document.createElement('a');a.href='./favoritos.html';a.textContent='Mis favoritos';footerHelp.append(a);
  }
  function attachFavorites(){
-  for(const card of document.querySelectorAll('.catalog-card[data-product-id],.product-image-box[data-product-id],.favorite-card[data-product-id]')){
+  for(const card of document.querySelectorAll('.product-image-box[data-product-id]')){
    const id=card.dataset.productId;
    if(!UUID.test(id||''))continue;
    const picture=card.matches('.product-image-box')?card:card.querySelector('.pic,.favorite-image');
