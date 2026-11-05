@@ -2,6 +2,10 @@
  const page=location.pathname.split('/').pop().toLowerCase();
  if(!document.querySelector('link[href*="legal-pages.css"]')){const css=document.createElement('link');css.rel='stylesheet';css.href='./legal-pages.css?v=2';document.head.append(css);}
  if(page==='admin.html'||page==='admin-acceso.html')return;
+ if(!document.querySelector('link[href*="wishlist.css"]')){
+  const style=document.createElement('link');style.rel='stylesheet';style.href='./wishlist.css?v=1';document.head.append(style);
+ }
+ import('./wishlist.js').catch(()=>{});
  const links=[
   ['libro-reclamaciones.html','Libro de Reclamaciones'],
   ['politica-privacidad.html','Política de Privacidad'],
