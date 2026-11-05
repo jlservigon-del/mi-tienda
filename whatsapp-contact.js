@@ -2,7 +2,7 @@ import {db,configured} from './store-client.js';
 const path=location.pathname.split('/').pop().toLowerCase();
 const isShop=['','index.html','hombre.html','mujer.html','accesorios.html','belleza.html','marca.html','producto.html','cuenta.html','checkout.html','carrito.html'].includes(path);
 if(isShop){
- const wrap=document.createElement('div');wrap.className='whatsapp-contact';wrap.setAttribute('aria-label','Atención a clientes');
+ const wrap=document.createElement('div');wrap.className='whatsapp-contact';wrap.setAttribute('aria-label','Atención a clientes');wrap.hidden=true;
  const link=document.createElement('a');link.className='whatsapp-contact-link';link.setAttribute('aria-label','Escribir a ventas por WhatsApp');
  link.target='_blank';link.rel='noopener noreferrer';
  const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -33,7 +33,7 @@ if(isShop){
    const {data,error}=await db.from('store_contact_channels').select('phone_e164,greeting').eq('channel','whatsapp').eq('enabled',true).eq('owner_verified',true).maybeSingle();
    if(error||!data||!/^[1-9][0-9]{7,14}$/.test(data.phone_e164||''))return;
    phone=data.phone_e164;greeting=data.greeting||'';
-   link.hidden=false;disabled.hidden=true;footerLink.hidden=false;wrap.classList.add('enabled');
+   wrap.hidden=false;link.hidden=false;disabled.hidden=true;footerLink.hidden=false;wrap.classList.add('enabled');
    setLink();
  }
  link.hidden=true;
