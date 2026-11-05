@@ -16,21 +16,21 @@ $("breadcrumbCurrent").textContent=label;
 $("resultsTitle").textContent=saleMode?'Liquidaciones disponibles':brandMode?"Selección "+label:"Explorar "+label;
 $("categoryDescription").textContent=saleMode?'Ofertas y liquidaciones con precios anteriores verificados. Solo se muestran productos autorizados para SALE.':brandMode?"Explora la selección de "+label+", filtra por precio y disponibilidad. Los artículos DEMO son únicamente ilustrativos.":"Explora, compara marcas y filtra por talla, precio y disponibilidad.";
 let items=[];
-const controlIds=["search","brand","size","minPrice","maxPrice","available","sort"];
+const controlIds=["search","brand","color","size","minPrice","maxPrice","available","sort"];
 const brandOf=p=>String(p.brand||"Sin marca especificada");
 const sizesOf=p=>Array.isArray(p.sizes)?p.sizes.map(String):[];
 const safeImg=url=>/^https:\/\//i.test(String(url||""));
 const text=(tag,value,cls)=>{const e=document.createElement(tag);e.textContent=value;if(cls)e.className=cls;return e;};
 function fillOptions(id,values){const select=$(id),first=select.firstElementChild;select.replaceChildren(first);for(const val of [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"))){const option=text("option",val);option.value=val;select.append(option);}}
 function card(p){
- const article=document.createElement("article");article.className="item catalog-card";
+ const article=document.createElement("article");article.className="item catalog-card";article.dataset.productId=p.id;
  const photo=document.createElement("div");photo.className="pic";
  if(safeImg(p.image_url)){const img=document.createElement("img");img.src=p.image_url;img.alt=(p.is_demo?"Imagen referencial gratuita, no corresponde necesariamente al producto de marca: ":"Fotografía del producto ")+p.name;img.loading="lazy";img.decoding="async";photo.append(img);}
  else photo.append(text("span","Fotografía próximamente","image-placeholder"));
  if(p.is_sale)photo.append(text("span","SALE","sale-ribbon"));
  else if(p.is_demo)photo.append(text("span","IMAGEN REFERENCIAL","demo-ribbon"));
  const info=document.createElement("div");info.className="info";
- info.append(text("p",brandOf(p),"brand-label"),text("h3",p.name));
+ info.append(text("p",brandOf(p),"brand-label"),text("h3",p.name));if(p.color)info.append(text("p",p.color,"catalog-color-note"));
  if(p.is_sale&&Number(p.compare_at_price)>Number(p.price)){
  const row=document.createElement('div');row.className='sale-price';
  row.append(text('span',money(p.price),'now'),text('span',money(p.compare_at_price),'was'),text('span','-'+Math.round((1-p.price/p.compare_at_price)*100)+'%','discount'));
@@ -43,10 +43,10 @@ function card(p){
  add.onclick=()=>addToCart(p);info.append(add);article.append(photo,info);return article;
 }
 function render(){
- const q=$("search").value.toLocaleLowerCase("es").trim(),brand=$("brand").value,size=$("size").value;
+ const q=$("search").value.toLocaleLowerCase("es").trim(),brand=$("brand").value,color=$("color").value,size=$("size").value;
  const min=$("minPrice").value===""?0:Number($("minPrice").value),max=$("maxPrice").value===""?Infinity:Number($("maxPrice").value);
  const available=$("available").checked;
- let list=items.filter(p=>(p.name+" "+p.description+" "+brandOf(p)).toLocaleLowerCase("es").includes(q)&&(!brand||brandOf(p)===brand)&&(!size||sizesOf(p).includes(size))&&Number(p.price)>=min&&Number(p.price)<=max&&(!available||(p.stock>0&&!p.is_demo)));
+ let list=items.filter(p=>(p.name+" "+p.description+" "+brandOf(p)).toLocaleLowerCase("es").includes(q)&&(!brand||brandOf(p)===brand)&&(!color||String(p.color||"").trim()===color)&&(!size||sizesOf(p).includes(size))&&Number(p.price)>=min&&Number(p.price)<=max&&(!available||(p.stock>0&&!p.is_demo)));
  const sort=$("sort").value;
  if(sort==="priceAsc")list.sort((a,b)=>a.price-b.price);
  if(sort==="priceDesc")list.sort((a,b)=>b.price-a.price);
@@ -56,7 +56,7 @@ function render(){
  $("resultsCount").textContent=list.length+" productos encontrados";
  $("empty").hidden=list.length!==0;
  const chips=$("filterChips");chips.replaceChildren();
- for(const label of [q,brand,size,min?("Desde S/ "+min):"",max!==Infinity?("Hasta S/ "+max):"",available?"Con stock":""]){if(label)chips.append(text("span",label));}
+ for(const label of [q,brand,color,size,min?("Desde S/ "+min):"",max!==Infinity?("Hasta S/ "+max):"",available?"Con stock":""]){if(label)chips.append(text("span",label));}
 }
 function reset(){for(const id of controlIds){const input=$(id);if(input.type==="checkbox")input.checked=false;else if(id==="sort")input.value="recent";else input.value="";}render();}
 $("resetFilters").onclick=reset;$("emptyReset").onclick=reset;
@@ -66,7 +66,7 @@ async function init(){
  const {data,error}=await db.from("products").select("*").eq("active",true).order("created_at",{ascending:false});
  if(error){$("dataStatus").textContent="Error al cargar catálogo: "+error.message;render();return;}
  items=(data||[]).filter(p=>saleMode?Boolean(p.is_sale)&&!p.is_demo&&Number(p.compare_at_price)>Number(p.price):brandMode?Boolean(chosenBrand)&&brandOf(p)===chosenBrand:group.terms.includes(String(p.category||"").trim().toLocaleLowerCase("es")));
- fillOptions("brand",items.map(brandOf));fillOptions("size",items.flatMap(sizesOf));
+ fillOptions("brand",items.map(brandOf));fillOptions("color",items.map(p=>String(p.color||"").trim()));fillOptions("size",items.flatMap(sizesOf));
  if(brandMode&&chosenBrand){$("brand").value=chosenBrand;}
  if(saleMode){$("empty").querySelector("h3").textContent="Próximamente: nuevas liquidaciones";$("empty").querySelector("p").textContent="Aún no hay descuentos confirmados. Descubre mientras tanto nuestros productos disponibles.";$("emptyReset").textContent="Limpiar filtros";}
  $("dataStatus").textContent=saleMode?"Las ofertas SALE aparecerán únicamente cuando sean publicadas por Administración con un precio anterior verificable.":items.some(p=>p.is_demo)?"Los productos marcados DEMO son muestras editoriales, con fotografías y precios referenciales. No están disponibles para compra.":"Catálogo conectado a Miami Store en Supabase.";
