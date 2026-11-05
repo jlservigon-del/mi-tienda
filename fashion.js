@@ -13,7 +13,7 @@ function node(tag,content,cls){const e=document.createElement(tag);if(content!==
 function item(p){
  const card=node("article",undefined,"item catalog-card");
  const photo=node("div",undefined,"pic");
- if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt="Fotografía editorial ilustrativa de "+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
+ if(/^https:\/\//i.test(String(p.image_url||""))){const image=document.createElement("img");image.src=p.image_url;image.alt=(p.is_demo?"Imagen editorial ilustrativa de ":"Fotografía del producto ")+p.name;image.loading="lazy";image.onerror=()=>{image.style.display="none";photo.append(node("span","Imagen no disponible","image-placeholder"));};photo.append(image);}
  else photo.append(node("span","Fotografía por agregar","image-placeholder"));
  if(p.is_sale)photo.append(node("span","SALE","sale-ribbon"));
  else if(p.is_demo)photo.append(node("span",p.variant_group?"FOTO REAL":"DEMO","demo-ribbon"));
@@ -32,7 +32,7 @@ function item(p){
 function render(){
  const q=(document.getElementById("homeSearch")?.value||"").trim().toLocaleLowerCase("es");
  const filtered=products.filter(p=>{
-  const correct=tab==='New Arrivals'?newestIds.has(p.id)&&!p.is_demo:tab==='SALE'?p.is_sale&&!p.is_demo:tab==='Todas'||p.category===tab;
+  const correct=tab==='New Arrivals'?newestIds.has(p.id)&&!p.is_demo:tab==='SALE'?p.is_sale&&!p.is_demo:tab==='Todas'?(!p.is_demo||Boolean(q)):p.category===tab;
   return correct&&(p.name+" "+p.category+" "+(p.brand||"")).toLocaleLowerCase("es").includes(q);
  });
  grid.replaceChildren(...filtered.map(item));
@@ -40,7 +40,7 @@ function render(){
   const empty=tab==='SALE'?"Todavía no hay artículos en liquidación. Aquí aparecerán las ofertas aprobadas por Miami Store.":tab==='New Arrivals'?"Aún no hay novedades disponibles. Prueba con otra categoría.":"No se encontraron artículos para esta búsqueda. Cambia el término o la colección.";
   grid.append(node("p",empty,"category-empty-message"));
  }
- status.textContent=tab==="SALE"?filtered.length+" artículos en liquidación aprobada.":tab==="New Arrivals"?filtered.length+" productos recién incorporados al catálogo.":filtered.length+" referencias encontradas. Los productos DEMO son únicamente ilustrativos.";
+ status.textContent=tab==="SALE"?filtered.length+" artículos en liquidación.":tab==="New Arrivals"?filtered.length+" productos recién incorporados.":filtered.length+" productos en esta selección.";
 }
 document.getElementById("homeSearch")?.addEventListener("input",render);
 document.getElementById("catalogTabs")?.addEventListener("click",event=>{
