@@ -10,7 +10,7 @@ async function load(){
  if(error||!p){$("productTitle").textContent="Producto no disponible";return;}
  document.title=p.name+" | Miami Store";
  $("productBrand").textContent=p.brand||"Miami Store";$("productTitle").textContent=p.name;
- $("productDescription").textContent=p.is_demo?"Ficha de demostración con datos ilustrativos, sin stock real.":p.description||"Descubre nuestra selección.";
+ $("productDescription").textContent=p.is_demo?"Producto ilustrativo no disponible para compra. La imagen procede de fotografía gratuita referencial y no representa necesariamente el artículo de la marca.":p.description||"Descubre nuestra selección.";
  const priceBox=$("productPrice");
  if(p.is_sale&&Number(p.compare_at_price)>Number(p.price)){
    priceBox.replaceChildren();
@@ -20,8 +20,8 @@ async function load(){
    discount.className='product-sale-discount';priceBox.append(current,previous,discount);
  }else priceBox.textContent=Number(p.price)>0?money(p.price)+(p.is_demo?" · Referencial":""):"Precio por confirmar";
  $("productStock").textContent=p.is_demo?(p.variant_group?"Pendiente de confirmar inventario":"Solo exposición · No disponible para compra"):p.stock>0?p.stock+" unidades en inventario":"Sin stock";
- $("productBadge").hidden=!p.is_demo&&!p.is_sale;$("productBadge").textContent=p.is_sale?"SALE":p.variant_group?"FOTO REAL · DATOS POR CONFIRMAR":"ARTÍCULO DE MUESTRA";
- const img=$("productPhoto");if(/^https:\/\//.test(p.image_url||""))img.src=p.image_url;else img.style.display="none";img.alt="Fotografía del producto "+p.name;
+ $("productBadge").hidden=!p.is_demo&&!p.is_sale;$("productBadge").textContent=p.is_sale?"SALE":"IMAGEN REFERENCIAL · DEMO";
+ const img=$("productPhoto");if(/^https:\/\//.test(p.image_url||""))img.src=p.image_url;else img.style.display="none";img.alt=(p.is_demo?"Imagen ilustrativa del concepto, no fotografía del producto original: ":"Fotografía del producto ")+p.name;
  const page=categoryPages[p.category]||"belleza.html";$("backCategory").href="./"+page;$("backCategory").textContent=p.category;
  const size=$("productSize");for(const value of p.sizes||[]){const option=document.createElement("option");option.textContent=value;option.value=value;size.append(option);}if(!size.options.length){const option=document.createElement("option");option.textContent="Estándar";size.append(option);}
  $("productQty").max=String(Math.max(1,p.stock));
