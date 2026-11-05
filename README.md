@@ -151,3 +151,12 @@ Consulta `marketing/REDES_SOCIALES_MIAMI_STORE.md` para la hoja de ruta de Faceb
 - Persiste `auth_leaked_password_protection`: J&M Business está en Supabase Free y el control nativo requiere Pro. No se ha contratado un plan ni activado cobro alguno.
 - Nuevas cuentas: mínimo 12 caracteres en la interfaz; para seguridad real debe ajustarse también la política de Supabase Auth.
 - Se documentaron los tests transaccionales reversibles y las medidas de mitigación en [Auditoría de seguridad](docs/AUDITORIA_SEGURIDAD_2026-10-29.md).
+
+## Cumplimiento legal en Perú — Fase 1 (4 noviembre 2026)
+- El enlace a **[Libro de Reclamaciones](./libro-reclamaciones.html)** aparece de forma permanente y en menús y pies de página. El formulario es visible solo como explicación hasta que el propietario publique los datos legales verificados.
+- Se agregaron la **[Política de Privacidad](./politica-privacidad.html)** y los **[Términos y condiciones](./terminos-condiciones.html)**, sujetos a revisión legal antes del lanzamiento.
+- Desde Administración se configuran **razón social, RUC, domicilio, correo, teléfono y contacto ARCO**; se pueden revisar reclamaciones privadas y registrar evidencia de respuestas que ya se enviaron por un medio comprobable.
+- Supabase contiene `legal_provider_settings` con RLS y `consumer_complaints` sin permisos públicos de lectura. El procedimiento de envío `submit_miami_complaint` es invocador sin privilegios elevados y genera un código de constancia.
+- Los reclamos y quejas requieren respuesta escrita en **15 días hábiles improrrogables**. **No hay correo automático**; la copia del consumidor se puede imprimir/guardar en PDF y el proveedor debe enviar la respuesta real por escrito.
+- Los pagos siguen desactivados. No se inventaron datos empresariales ni se registraron reclamaciones.
+- [Checklist de activación y bases legales](docs/CUMPLIMIENTO_LEGAL_PERU.md): contiene referencias oficiales y los pasos aún pendientes para operar comercialmente.
